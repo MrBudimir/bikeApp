@@ -25,7 +25,7 @@ export default function App() {
             let acitveColor = darkOrangeColor;
 
             if (route.name === "Home") {
-              iconName = "home-outline";
+              iconName = "map-outline";
               color = focused ? acitveColor : inactivColor;
             } else if (route.name === "MyBike") {
               iconName = "bicycle-outline";
@@ -36,15 +36,7 @@ export default function App() {
             }
             return (
               <TouchableOpacity activeOpacity={0.3}>
-                <Ionicons
-                  name={iconName}
-                  size={size}
-                  color={color}
-                  style={{
-                    borderBottomWidth: 1,
-                    borderBottomColor: focused ? acitveColor : blackColor,
-                  }}
-                />
+                <Ionicons name={iconName} size={size} color={color} />
               </TouchableOpacity>
             );
           },
@@ -57,7 +49,10 @@ export default function App() {
           tabBarStyle: {
             backgroundColor: blackColor,
             borderTopColor: "transparent",
+            activeOpacity: 0.1,
           },
+          tabBarActiveBackgroundColor: "#25384A",
+          activeOpacity: 0.1,
         })}
       >
         <Tab.Screen name="Home" component={HomeScreen} />
