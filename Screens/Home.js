@@ -5,6 +5,8 @@ import { Ionicons } from "@expo/vector-icons";
 import Carousel from "react-native-snap-carousel";
 import { useState } from "react";
 import Popup from "../components/Popup";
+import FlashMessage from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 
 const mapData = require("./MapData/Map");
 
@@ -19,6 +21,26 @@ const onCarouselItemChange = (index) => {
   });
 };
 
+const showSuccessMessage = () => {
+  showMessage({
+    message: "Successful",
+    type: "success",
+    icon: "success",
+    description: "You rent a bike successfully!",
+    duration: 2000,
+  });
+};
+
+const showFailMessage = () => {
+  showMessage({
+    message: "Fail",
+    type: "danger",
+    icon: "danger",
+    description: "Oops, something went wrong!",
+    duration: 2000,
+  });
+};
+
 const onMarkerPressed = (index) => {
   _carousel.snapToItem(index);
 };
@@ -26,14 +48,24 @@ const onMarkerPressed = (index) => {
 const HomeScreen = () => {
   const [show, setShow] = useState(false);
 
-  const setShowPopup = () => {
+  const closePopup = () => {
     setShow(false);
+  };
+
+  const rentBike = () => {
+    setShow(false);
+    //showSuccessMessage();
+    showFailMessage();
   };
 
   function renderCarouselItem({ item }) {
     return (
       <View style={styles.cardContainer}>
-        <Popup visible={show} onCancelPopup={setShowPopup} />
+        <Popup
+          visible={show}
+          onCancelPopup={closePopup}
+          onConfirmPopup={rentBike}
+        />
         <Text style={styles.title}>{item.name}</Text>
         <View>
           <Text style={styles.infoText}>{item.adress}</Text>
@@ -86,6 +118,7 @@ const HomeScreen = () => {
         containerCustomStyle={styles.carousel}
         onSnapToItem={(index) => onCarouselItemChange(index)}
       />
+      <FlashMessage position="top" />
     </View>
   );
 };
@@ -101,14 +134,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     alignSelf: "center",
-    marginBottom: 25,
+    marginBottom: 20,
   },
   cardContainer: {
     backgroundColor: "#101820FF",
-    height: 140,
-    width: 275,
+    height: 150,
+    width: "100%",
     borderRadius: 5,
-    opacity: 0.9,
+    opacity: 0.95,
     alignSelf: "center",
   },
   title: {
@@ -125,7 +158,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   button: {
-    marginTop: 5,
+    marginTop: 10,
     alignSelf: "center",
     width: "50%",
     height: 45,
