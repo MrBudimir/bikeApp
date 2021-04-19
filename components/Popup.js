@@ -1,10 +1,9 @@
 import React from "react";
-import { useState } from "react";
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
 
 const Popup = (props) => {
   return (
-    <Modal visible={props.visible} animationType="slide" transparent={true}>
+    <Modal visible={props.visible} animationType="fade" transparent={true}>
       <View style={styles.popup}>
         <View style={styles.popupCard}>
           <View style={{ marginLeft: 25 }}>
@@ -12,7 +11,10 @@ const Popup = (props) => {
             <Text style={styles.question}>Do you want to rent a bike?</Text>
           </View>
           <View style={styles.buttons}>
-            <TouchableOpacity style={styles.confirm}>
+            <TouchableOpacity
+              style={styles.confirm}
+              onPress={props.onConfirmPopup.bind(this)}
+            >
               <Text style={styles.buttonText}>Confirm</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -36,7 +38,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   popupCard: {
-    backgroundColor: "#25384A",
+    backgroundColor: "#101820FF",
     height: "30%",
     width: "85%",
     borderRadius: 5,
