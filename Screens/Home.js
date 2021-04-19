@@ -1,26 +1,12 @@
 import React from "react";
-import { View, StyleSheet, Text, Button, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
 import Carousel from "react-native-snap-carousel";
+import { useState } from "react";
+import Popup from "../components/Popup";
 
-//47.07254033769078, 15.438058106976376
 const mapData = require("./MapData/Map");
-
-const renderCarouselItem = ({ item }) => {
-  return (
-    <View style={styles.cardContainer}>
-      <Text style={styles.title}>{item.name}</Text>
-      <View>
-        <Text style={styles.infoText}>{item.adress}</Text>
-        <Text style={styles.infoText}>{item.available} bikes available</Text>
-      </View>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}> Rent bike</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
 
 const onCarouselItemChange = (index) => {
   let marker = mapData.state.markers[index];
@@ -38,6 +24,28 @@ const onMarkerPressed = (index) => {
 };
 
 const HomeScreen = () => {
+  const [show, setShow] = useState(false);
+
+  const setShowPopup = () => {
+    setShow(false);
+  };
+
+  function renderCarouselItem({ item }) {
+    return (
+      <View style={styles.cardContainer}>
+        <Popup visible={show} onCancelPopup={setShowPopup} />
+        <Text style={styles.title}>{item.name}</Text>
+        <View>
+          <Text style={styles.infoText}>{item.adress}</Text>
+          <Text style={styles.infoText}>{item.available} bikes available</Text>
+        </View>
+        <TouchableOpacity style={styles.button} onPress={() => setShow(true)}>
+          <Text style={styles.buttonText}> Rent bike</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.screen}>
       <MapView
@@ -99,7 +107,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#101820FF",
     height: 140,
     width: 275,
-    borderRadius: 15,
+    borderRadius: 5,
     opacity: 0.9,
     alignSelf: "center",
   },
@@ -117,17 +125,18 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   button: {
-    marginTop: 10,
+    marginTop: 5,
     alignSelf: "center",
     width: "50%",
-    height: "25%",
-    backgroundColor: "#F2AA4CFF",
+    height: 45,
+    borderWidth: 3,
+    borderColor: "#F2AA4CFF",
     borderRadius: 15,
     alignItems: "center",
     justifyContent: "center",
   },
   buttonText: {
-    color: "#101820FF",
+    color: "#F2AA4CFF",
     fontSize: 16,
     fontWeight: "bold",
   },
