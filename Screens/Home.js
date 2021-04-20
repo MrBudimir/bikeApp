@@ -45,11 +45,12 @@ const onMarkerPressed = (index) => {
   _carousel.snapToItem(index);
 };
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const [show, setShow] = useState(false);
 
   const closePopup = () => {
     setShow(false);
+    navigation.goBack();
   };
 
   const rentBike = () => {
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
     height: 45,
     borderWidth: 3,
     borderColor: "#F2AA4CFF",
-    borderRadius: 15,
+    borderRadius: 25,
     alignItems: "center",
     justifyContent: "center",
   },
