@@ -2,11 +2,11 @@ import React from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "./Screens/Home";
 import MyBikeScreen from "./Screens/MyBike";
 import MyProfileScreen from "./Screens/MyProfile";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import HomeScreen from "./Screens/Home";
 
 const Tab = createBottomTabNavigator();
 const orangeColor = "#F2AA4CFF";
