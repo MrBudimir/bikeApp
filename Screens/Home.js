@@ -14,6 +14,7 @@ class Home extends Component {
     longitude: 15.438058106976376,
     latitudeDelta: 0.04864195044303443,
     longitudeDelta: 0.040142817690068,
+
   };
   state = {
     showPopup: false,

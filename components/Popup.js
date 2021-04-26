@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   cancel: {
     borderWidth: 3,
     borderColor: "red",
-    borderRadius: 15,
+    borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
     height: 45,
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   confirm: {
     borderWidth: 3,
     borderColor: "green",
-    borderRadius: 15,
+    borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
     height: 45,
