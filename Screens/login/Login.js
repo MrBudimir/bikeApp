@@ -26,7 +26,7 @@ const Login = ({ navigation }) => {
         />
         <TouchableOpacity
           style={styles.loginButton}
-          onPress={() => navigation.navigate("test")}
+          onPress={() => navigation.navigate("tabNavigator")}
         >
           <Text
             style={{ color: "#101820FF", fontWeight: "bold", fontSize: 18 }}
