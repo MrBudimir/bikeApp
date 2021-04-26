@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,49 +7,74 @@ import { useState } from "react";
 import Popup from "../components/Popup";
 import FlashMessage from "react-native-flash-message";
 import { showMessage } from "react-native-flash-message";
+import axios from "axios";
 
-const mapData = require("./MapData/Map");
+const HomeScreen = ({ navigation }) => {
+  const [show, setShow] = useState(false);
+  const [mapData, setMapData] = useState([]);
+  const Url = "http://84.112.202.204:5567/RentStation/allStations";
 
-const onCarouselItemChange = (index) => {
-  let marker = mapData.state.markers[index];
+  useEffect(() => {
+    const cancelToken = axios.CancelToken;
+    const source = cancelToken.source();
 
-  _map.animateToRegion({
-    latitude: marker.coordinate.latitude,
-    longitude: marker.coordinate.longitude,
+    axios
+      .get(Url, { cancelToken: source.token })
+      .then((data) => {
+        setMapData(data.data);
+      })
+      .catch((err) => console.log(err));
+
+    return function cleanup() {
+      source.cancel("request canceled");
+    };
+  });
+
+  const region = {
+    latitude: 47.07254033769078,
+    longitude: 15.438058106976376,
     latitudeDelta: 0.04864195044303443,
     longitudeDelta: 0.040142817690068,
-  });
-};
+  };
 
-const showSuccessMessage = () => {
-  showMessage({
-    message: "Successful",
-    type: "success",
-    icon: "success",
-    description: "You rent a bike successfully!",
-    duration: 2000,
-  });
-};
+  const onCarouselItemChange = (index) => {
+    let marker = mapData[index];
 
-const showFailMessage = () => {
-  showMessage({
-    message: "Fail",
-    type: "danger",
-    icon: "danger",
-    description: "Oops, something went wrong!",
-    duration: 2000,
-  });
-};
+    _map.animateToRegion({
+      latitude: marker.address.latitude,
+      longitude: marker.address.longitude,
+      latitudeDelta: 0.04864195044303443,
+      longitudeDelta: 0.040142817690068,
+    });
+  };
 
-const onMarkerPressed = (index) => {
-  _carousel.snapToItem(index);
-};
+  const showSuccessMessage = () => {
+    showMessage({
+      message: "Successful",
+      type: "success",
+      icon: "success",
+      description: "You rent a bike successfully!",
+      duration: 2000,
+    });
+  };
 
-const HomeScreen = () => {
-  const [show, setShow] = useState(false);
+  const showFailMessage = () => {
+    showMessage({
+      message: "Fail",
+      type: "danger",
+      icon: "danger",
+      description: "Oops, something went wrong!",
+      duration: 2000,
+    });
+  };
+
+  const onMarkerPressed = (index) => {
+    _carousel.snapToItem(index);
+  };
 
   const closePopup = () => {
     setShow(false);
+    navigation.navigate("MyBike");
   };
 
   const rentBike = () => {
@@ -66,10 +91,9 @@ const HomeScreen = () => {
           onCancelPopup={closePopup}
           onConfirmPopup={rentBike}
         />
-        <Text style={styles.title}>{item.name}</Text>
+        <Text style={styles.title}>{item.address.streetName}</Text>
         <View>
-          <Text style={styles.infoText}>{item.adress}</Text>
-          <Text style={styles.infoText}>{item.available} bikes available</Text>
+          <Text style={styles.infoText}>{item.capacity} bikes available</Text>
         </View>
         <TouchableOpacity style={styles.button} onPress={() => setShow(true)}>
           <Text style={styles.buttonText}> Rent bike</Text>
@@ -82,14 +106,20 @@ const HomeScreen = () => {
     <View style={styles.screen}>
       <MapView
         style={styles.map}
-        initialRegion={mapData.state.region}
+        initialRegion={region}
         ref={(ref) => (_map = ref)}
       >
-        {mapData.state.markers.map((marker, index) => {
+        {mapData.map((marker, index) => {
+          const location = {
+            coordinate: {
+              latitude: marker.address.latitude,
+              longitude: marker.address.longitude,
+            },
+          };
           return (
             <Marker
               key={index}
-              coordinate={marker.coordinate}
+              coordinate={location.coordinate}
               ref={(ref) => {
                 marker = ref;
               }}
@@ -100,7 +130,7 @@ const HomeScreen = () => {
                   color: "black",
                 }}
               >
-                {marker.name}
+                {marker.id}
               </Text>
               <Ionicons name="bicycle" size={40} color="#CC5500" />
             </Marker>
@@ -111,7 +141,7 @@ const HomeScreen = () => {
         ref={(ref) => {
           _carousel = ref;
         }}
-        data={mapData.state.markers}
+        data={mapData}
         sliderWidth={300}
         itemWidth={300}
         renderItem={renderCarouselItem}
@@ -164,7 +194,7 @@ const styles = StyleSheet.create({
     height: 45,
     borderWidth: 3,
     borderColor: "#F2AA4CFF",
-    borderRadius: 15,
+    borderRadius: 25,
     alignItems: "center",
     justifyContent: "center",
   },
