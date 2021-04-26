@@ -86,25 +86,24 @@ class Home extends Component {
     this.setState({ showPopup: false });
   };
 
-  rentBike = () => {
+  rentBike = (currentStationId) => {
     this.closePopup();
 
-    /*   const url = "http://84.112.202.204:5567/invoices/rentBike";
+    const url = "http://84.112.202.204:5567/invoices/rentBike";
 
     const params = {
       params: {
-        email: this.email,
         stationId: currentStationId,
+        email: this.email,
       },
     };
 
     axios
-      .post(url, params)
+      .post(url, null, params)
       .then((response) => {
         console.log(response);
       })
       .catch((err) => this.showFailMessage(err));
-      */
   };
 
   renderCarouselItem({ item }) {
@@ -113,7 +112,7 @@ class Home extends Component {
         <Popup
           visible={this.state.showPopup}
           onCancelPopup={this.closePopup}
-          onConfirmPopup={this.rentBike}
+          onConfirmPopup={() => this.rentBike(item.id)}
         />
         <Text style={styles.title}>{item.address.streetName}</Text>
         <View>
