@@ -1,34 +1,36 @@
-import React from "react";
+import React, {Component} from "react";
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
 
-const Popup = (props) => {
-  return (
-    <Modal visible={props.visible} animationType="fade" transparent={true}>
-      <View style={styles.popup}>
-        <View style={styles.popupCard}>
-          <View style={{ marginLeft: 25 }}>
-            <Text style={styles.title}>Rent bike</Text>
-            <Text style={styles.question}>Do you want to rent a bike?</Text>
+class Popup extends Component{
+  render() {
+    return (
+        <Modal visible={this.props.visible} animationType="fade" transparent={true}>
+          <View style={styles.popup}>
+            <View style={styles.popupCard}>
+              <View style={{ marginLeft: 25 }}>
+                <Text style={styles.title}>Rent bike</Text>
+                <Text style={styles.question}>Do you want to rent a bike?</Text>
+              </View>
+              <View style={styles.buttons}>
+                <TouchableOpacity
+                    style={styles.confirm}
+                    onPress={this.props.onConfirmPopup.bind(this)}
+                >
+                  <Text style={styles.buttonText}>Confirm</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.cancel}
+                    onPress={this.props.onCancelPopup.bind(this)}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-          <View style={styles.buttons}>
-            <TouchableOpacity
-              style={styles.confirm}
-              onPress={props.onConfirmPopup.bind(this)}
-            >
-              <Text style={styles.buttonText}>Confirm</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.cancel}
-              onPress={props.onCancelPopup.bind(this)}
-            >
-              <Text style={styles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
-};
+        </Modal>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   popup: {

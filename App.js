@@ -1,12 +1,15 @@
-import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import BottomTabNavigator from "./navigation/TabNavigator";
+import React, {Component} from "react";
+import {NavigationContainer} from "@react-navigation/native";
 import StackNavigator from "./navigation/StackNavigator";
 
-export default function App() {
-  return (
-    <NavigationContainer>
-      <StackNavigator />
-    </NavigationContainer>
-  );
+class App extends Component {
+    render() {
+        return (
+            <NavigationContainer>
+                <StackNavigator/>
+            </NavigationContainer>
+        );
+    }
 }
+
+export default App;
