@@ -1,128 +1,190 @@
-import React from "react";
+import React, { Component } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
 import Carousel from "react-native-snap-carousel";
-import { useState } from "react";
 import Popup from "../components/Popup";
 import FlashMessage from "react-native-flash-message";
 import { showMessage } from "react-native-flash-message";
+import axios from "axios";
 
-const mapData = require("./MapData/Map");
-
-const onCarouselItemChange = (index) => {
-  let marker = mapData.state.markers[index];
-
-  _map.animateToRegion({
-    latitude: marker.coordinate.latitude,
-    longitude: marker.coordinate.longitude,
+class Home extends Component {
+  region = {
+    latitude: 47.07254033769078,
+    longitude: 15.438058106976376,
     latitudeDelta: 0.04864195044303443,
     longitudeDelta: 0.040142817690068,
-  });
-};
 
-const showSuccessMessage = () => {
-  showMessage({
-    message: "Successful",
-    type: "success",
-    icon: "success",
-    description: "You rent a bike successfully!",
-    duration: 2000,
-  });
-};
+  };
+  state = {
+    showPopup: false,
+    mapData: [],
+  };
+  email = "PetraMeier@gmail.com";
 
-const showFailMessage = () => {
-  showMessage({
-    message: "Fail",
-    type: "danger",
-    icon: "danger",
-    description: "Oops, something went wrong!",
-    duration: 2000,
-  });
-};
+  constructor() {
+    super();
+  }
 
-const onMarkerPressed = (index) => {
-  _carousel.snapToItem(index);
-};
+  getMapData() {
+    const cancelToken = axios.CancelToken;
+    const source = cancelToken.source();
+    const url = "http://84.112.202.204:5567/RentStation/allStations";
 
-const HomeScreen = ({ navigation }) => {
-  const [show, setShow] = useState(false);
+    axios
+      .get(url, { cancelToken: source.token })
+      .then((stations) => {
+        this.setState({ mapData: stations.data });
+      })
+      .catch((err) => console.log(err));
 
-  const closePopup = () => {
-    setShow(false);
-    navigation.goBack();
+    return function cleanup() {
+      source.cancel("request canceled");
+    };
+  }
+
+  componentDidMount() {
+    this.getMapData();
+  }
+
+  onCarouselItemChange = (index) => {
+    let marker = this.state.mapData[index];
+
+    _map.animateToRegion({
+      latitude: marker.address.latitude,
+      longitude: marker.address.longitude,
+      latitudeDelta: 0.04864195044303443,
+      longitudeDelta: 0.040142817690068,
+    });
   };
 
-  const rentBike = () => {
-    setShow(false);
-    //showSuccessMessage();
-    showFailMessage();
+  showSuccessMessage = () => {
+    showMessage({
+      message: "Successful",
+      type: "success",
+      icon: "success",
+      description: "You rent a bike successfully!",
+      duration: 2000,
+    });
   };
 
-  function renderCarouselItem({ item }) {
+  showFailMessage = (err) => {
+    showMessage({
+      message: "Fail",
+      type: "danger",
+      icon: "danger",
+      description: "Oops, something went wrong!",
+      duration: 2000,
+    });
+    console.log(err);
+  };
+
+  onMarkerPressed = (index) => {
+    _carousel.snapToItem(index);
+  };
+
+  closePopup = () => {
+    this.setState({ showPopup: false });
+  };
+
+  rentBike = (currentStationId) => {
+    this.closePopup();
+
+    const url = "http://84.112.202.204:5567/invoices/rentBike";
+
+    const params = {
+      params: {
+        stationId: currentStationId,
+        email: this.email,
+      },
+    };
+
+    axios
+      .post(url, null, params)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) => this.showFailMessage(err));
+  };
+
+  renderCarouselItem({ item }) {
     return (
       <View style={styles.cardContainer}>
         <Popup
-          visible={show}
-          onCancelPopup={closePopup}
-          onConfirmPopup={rentBike}
+          visible={this.state.showPopup}
+          onCancelPopup={this.closePopup}
+          onConfirmPopup={() => this.rentBike(item.id)}
         />
-        <Text style={styles.title}>{item.name}</Text>
+        <Text style={styles.title}>{item.address.streetName}</Text>
         <View>
-          <Text style={styles.infoText}>{item.adress}</Text>
-          <Text style={styles.infoText}>{item.available} bikes available</Text>
+          <Text style={styles.infoText}>{item.capacity} bikes available</Text>
         </View>
-        <TouchableOpacity style={styles.button} onPress={() => setShow(true)}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() =>
+            this.setState({
+              showPopup: true,
+            })
+          }
+        >
           <Text style={styles.buttonText}> Rent bike</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  return (
-    <View style={styles.screen}>
-      <MapView
-        style={styles.map}
-        initialRegion={mapData.state.region}
-        ref={(ref) => (_map = ref)}
-      >
-        {mapData.state.markers.map((marker, index) => {
-          return (
-            <Marker
-              key={index}
-              coordinate={marker.coordinate}
-              ref={(ref) => {
-                marker = ref;
-              }}
-              onPress={() => onMarkerPressed(index)}
-            >
-              <Text
-                style={{
-                  color: "black",
+  render() {
+    return (
+      <View style={styles.screen}>
+        <MapView
+          style={styles.map}
+          initialRegion={this.region}
+          ref={(ref) => (_map = ref)}
+        >
+          {this.state.mapData.map((marker, index) => {
+            const location = {
+              coordinate: {
+                latitude: marker.address.latitude,
+                longitude: marker.address.longitude,
+              },
+            };
+            return (
+              <Marker
+                key={index}
+                coordinate={location.coordinate}
+                ref={(ref) => {
+                  marker = ref;
                 }}
+                onPress={() => this.onMarkerPressed(index)}
               >
-                {marker.name}
-              </Text>
-              <Ionicons name="bicycle" size={40} color="#CC5500" />
-            </Marker>
-          );
-        })}
-      </MapView>
-      <Carousel
-        ref={(ref) => {
-          _carousel = ref;
-        }}
-        data={mapData.state.markers}
-        sliderWidth={300}
-        itemWidth={300}
-        renderItem={renderCarouselItem}
-        containerCustomStyle={styles.carousel}
-        onSnapToItem={(index) => onCarouselItemChange(index)}
-      />
-      <FlashMessage position="top" />
-    </View>
-  );
-};
+                <Text
+                  style={{
+                    color: "black",
+                  }}
+                >
+                  {marker.address.streetName}
+                </Text>
+                <Ionicons name="bicycle" size={40} color="#CC5500" />
+              </Marker>
+            );
+          })}
+        </MapView>
+        <Carousel
+          ref={(ref) => {
+            _carousel = ref;
+          }}
+          data={this.state.mapData}
+          sliderWidth={300}
+          itemWidth={300}
+          renderItem={(ref) => this.renderCarouselItem(ref)}
+          containerCustomStyle={styles.carousel}
+          onSnapToItem={(index) => this.onCarouselItemChange(index)}
+        />
+        <FlashMessage position="top" />
+      </View>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   screen: {
@@ -176,4 +238,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default Home;
