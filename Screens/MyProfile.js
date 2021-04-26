@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet} from "react-native";
+import {View, Text, StyleSheet, AppState, TouchableOpacity} from "react-native";
 import React, {Component} from 'react'
 import axios from "axios";
 
@@ -6,19 +6,44 @@ class MyProfile extends Component {
 
     email = "PetraMeier@gmail.com"
     state = {
-        user: {}
+        user: {},
+        appState: AppState.currentState
     }
+
     constructor() {
         super();
     }
 
     componentDidMount() {
-        console.log("test")
         this.getCurrentUser(this.email)
+
         this.props.navigation.addListener('focus', () => {
-            console.log("REST CALL HERE")
+            console.log("Entered Navigation")
         });
+
+        AppState.addEventListener("change", this._handleAppStateChange)
     }
+
+    componentWillUnmount() {
+        if(this.props.navigation.event){
+            this.props.navigation.removeEventListener('focus', () => {
+                console.log("Entered Navigation")
+            });
+        }
+
+        AppState.removeEventListener("change", this._handleAppStateChange);
+    }
+
+    _handleAppStateChange = nextAppState => {
+        if (
+            this.state.appState.match(/inactive|background/) &&
+            nextAppState === "active"
+        ) {
+            console.log("Maybe here some PROFILE REST Calls: coming from background");
+        }
+
+        this.setState({appState: nextAppState});
+    };
 
     getCurrentUser(emailOfUser) {
         // this.props.navigation.navigate('MyBike')
@@ -32,11 +57,9 @@ class MyProfile extends Component {
 
         axios.get(Url, params)
             .then((user) => {
-                console.log(user.data)
                 let currentUser = user.data;
 
                 if (currentUser) {
-                    console.log(currentUser)
                     this.setState({
                         user: currentUser
                     })
@@ -47,27 +70,35 @@ class MyProfile extends Component {
     }
 
     render() {
-        const { navigation } = this.props;
+        const {navigation} = this.props;
         return (
-            <View style={styles.screen}>
-                <Text style={styles.formHeader}>
-                    First Name
-                </Text>
-                <Text style={styles.formContent}>
-                    {(this.state.user) ? (this.state.user.firstName) : ""}
-                </Text>
-                <Text style={styles.formHeader}>
-                    Last Name
-                </Text>
-                <Text style={styles.formContent}>
-                    {(this.state.user) ? (this.state.user.lastName) : ""}
-                </Text>
-                <Text style={styles.formHeader}>
-                    Email
-                </Text>
-                <Text style={styles.formContent}>
-                    {(this.state.user) ? (this.state.user.email) : ""}
-                </Text>
+            <View>
+                <View style={styles.screen}>
+                    <Text style={styles.formHeader}>
+                        First Name
+                    </Text>
+                    <Text style={styles.formContent}>
+                        {(this.state.user) ? (this.state.user.firstName) : ""}
+                    </Text>
+                    <Text style={styles.formHeader}>
+                        Last Name
+                    </Text>
+                    <Text style={styles.formContent}>
+                        {(this.state.user) ? (this.state.user.lastName) : ""}
+                    </Text>
+                    <Text style={styles.formHeader}>
+                        Email
+                    </Text>
+                    <Text style={styles.formContent}>
+                        {(this.state.user) ? (this.state.user.email) : ""}
+                    </Text>
+                </View>
+                <View style={styles.logoutView}>
+                    <TouchableOpacity style={styles.logoutButton}
+                                      onPress={() => this.props.navigation.navigate("login")}>
+                        <Text style={styles.buttonText}>Logout</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     }
@@ -75,7 +106,7 @@ class MyProfile extends Component {
 
 const styles = StyleSheet.create({
     screen: {
-        flex: 1,
+        height: '70%'
     },
     formHeader: {
         borderBottomWidth: 2,
@@ -90,6 +121,25 @@ const styles = StyleSheet.create({
         paddingLeft: 3,
         borderRadius: 3
     },
+    logoutView: {
+        height: '30%',
+        alignItems: 'center',
+        justifyContent: 'flex-end'
+    },
+    logoutButton: {
+        alignSelf: "center",
+        height: 55,
+        borderColor: "#000000",
+        backgroundColor: '#f10707',
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%"
+    },
+    buttonText: {
+        color: "#FFFFFF",
+        fontSize: 16,
+        fontWeight: "bold",
+    }
 });
 
 export default MyProfile;
