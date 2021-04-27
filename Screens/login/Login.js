@@ -41,22 +41,22 @@ class Login extends Component {
         if (!response.data) {
           this.wrongLoginData();
         } else {
-          this.storeToken(JSON.stringify(response.data));
+          this.storeData(JSON.stringify(response.data));
           this.props.navigation.navigate("tabNavigator");
         }
       })
       .catch((err) => console.log(err));
   };
 
-  async storeData(user) {
+  storeData = async (user) => {
     try {
       await AsyncStorage.setItem("userData", JSON.stringify(user));
     } catch (err) {
       console.log("Store Token", err);
     }
-  }
+  };
 
-  async getUserData() {
+  getUserData = async () => {
     try {
       let userData = await AsyncStorage.getItem("userData");
       let data = JSON.parse(userData);
@@ -64,7 +64,7 @@ class Login extends Component {
     } catch (err) {
       console.log("Get Token", err);
     }
-  }
+  };
 
   render() {
     return (

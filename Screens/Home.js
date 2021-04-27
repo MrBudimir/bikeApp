@@ -116,10 +116,8 @@ class Home extends Component {
           onConfirmPopup={() => this.rentBike(item.id)}
         />
         <Text style={styles.title}>{item.address.streetName}</Text>
-        <View>
-          <Text style={styles.infoText}>
-            {item.availableBikes} bikes available
-          </Text>
+        <View style={{ justifyContent: "center" }}>
+          <Text style={styles.infoText}>{item.availableBikes} available</Text>
         </View>
         <TouchableOpacity
           style={styles.button}
@@ -203,28 +201,27 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     backgroundColor: "#101820FF",
-    height: 150,
+    height: 175,
     width: "100%",
     borderRadius: 5,
     opacity: 0.95,
+    alignItems: "center",
     alignSelf: "center",
+    justifyContent: "space-between",
   },
   title: {
     color: "#F2AA4CFF",
-    alignSelf: "center",
     marginTop: 5,
-    marginBottom: 10,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
   },
   infoText: {
     color: "white",
-    marginLeft: 10,
-    marginBottom: 5,
+    fontSize: 20,
   },
   button: {
-    marginTop: 10,
     alignSelf: "center",
+    marginBottom: 15,
     width: "50%",
     height: 45,
     borderWidth: 3,
