@@ -180,7 +180,6 @@ class Home extends Component {
           containerCustomStyle={styles.carousel}
           onSnapToItem={(index) => this.onCarouselItemChange(index)}
         />
-        <FlashMessage position="top" />
       </View>
     );
   }

@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {AsyncStorage} from "react-native";
 
 class Login extends Component {
   state = {
@@ -41,7 +41,7 @@ class Login extends Component {
         if (!response.data) {
           this.wrongLoginData();
         } else {
-          this.storeData(JSON.stringify(response.data));
+          this.storeData(response.data);
           this.props.navigation.navigate("tabNavigator");
         }
       })
@@ -53,16 +53,6 @@ class Login extends Component {
       await AsyncStorage.setItem("userData", JSON.stringify(user));
     } catch (err) {
       console.log("Store Token", err);
-    }
-  };
-
-  getUserData = async () => {
-    try {
-      let userData = await AsyncStorage.getItem("userData");
-      let data = JSON.parse(userData);
-      console.log(data);
-    } catch (err) {
-      console.log("Get Token", err);
     }
   };
 

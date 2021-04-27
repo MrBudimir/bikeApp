@@ -3,16 +3,17 @@ import {
     StyleSheet,
     Text,
     View,
-    Button, TouchableOpacity
+    TouchableOpacity, AppState
 } from 'react-native'
 import axios from "axios";
 import 'intl';
 import 'intl/locale-data/jsonp/de';
 import 'intl/locale-data/jsonp/en';
+import {AsyncStorage} from "react-native";
 
 class MyBike extends Component {
 
-    email = "PetraMeier@gmail.com"
+    email = null
     state = {
         timer: null,
         counter: 0,
@@ -23,7 +24,8 @@ class MyBike extends Component {
             days: 0,
             hours: 0,
             seconds: 0
-        }
+        },
+        appState: AppState.currentState
     }
     options;
 
@@ -31,15 +33,45 @@ class MyBike extends Component {
         super();
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        this.email = await this.getUserData()
         this.getCurrentInvoice(this.email)
+        this.props.navigation.addListener('focus', () => {
+            this.getCurrentInvoice(this.email);
+        });
+
         let timer = setInterval(this.updateClock, 1000);
         this.setState({timer});
+
+        AppState.addEventListener("change", this._handleAppStateChange)
     }
+
+    getUserData = async () => {
+        try {
+            let userData = await AsyncStorage.getItem("userData");
+            let data = JSON.parse(userData);
+            return data.email
+        } catch (err) {
+            console.log("Get Token", err);
+        }
+    };
 
     componentWillUnmount() {
         clearInterval(this.state.timer);
+
+        AppState.removeEventListener("change", this._handleAppStateChange);
     }
+
+    _handleAppStateChange = nextAppState => {
+        if (
+            this.state.appState.match(/inactive|background/) &&
+            nextAppState === "active"
+        ) {
+            console.log("Maybe here some BIKE REST Calls: coming from background");
+        }
+
+        this.setState({ appState: nextAppState });
+    };
 
     updateClock = () => {
         let newDate = new Date();
@@ -69,6 +101,7 @@ class MyBike extends Component {
     getCurrentInvoice(emailOfUser) {
         const Url = "http://84.112.202.204:5567/invoices/currentInvoice";
 
+        console.log(emailOfUser)
         const params = {
             params: {
                 email: emailOfUser
@@ -77,13 +110,10 @@ class MyBike extends Component {
 
         axios.get(Url, params)
             .then((invoice) => {
-                console.log(invoice.data)
                 let newInvoice = invoice.data;
                 let dateObject;
-
                 if (newInvoice) {
                     dateObject = Date.parse(newInvoice.startDate)
-                    console.log(newInvoice.startDate)
                     newInvoice.startDate = this.formatDate(dateObject)
                     this.setState({
                         currentInvoice: newInvoice,
@@ -120,7 +150,6 @@ class MyBike extends Component {
 
         axios.post(Url, null, params)
             .then((response) => {
-                console.log(response.data)
                 if (response.data) {
                     this.setState({
                         currentInvoice: {},
@@ -135,10 +164,10 @@ class MyBike extends Component {
         let timerOrRefresh;
         if (this.state.startDate) {
             timerOrRefresh = <View style={styles.timer}><Text
-                style={styles.timerText}>{`${days} : ${hours} : ${minutes} : ${seconds}`}</Text></View>;
+                style={styles.timerText}>{`${days} d: ${hours} h: ${minutes} m: ${seconds} s`}</Text></View>;
         } else {
             timerOrRefresh =
-                <TouchableOpacity style={styles.refresh} onPress={() => this.getCurrentInvoice('PetraMeier@gmail.com')}>
+                <TouchableOpacity style={styles.refresh} onPress={() => this.getCurrentInvoice(this.email)}>
                     <Text style={styles.buttonText}>Refresh...</Text>
                 </TouchableOpacity>;
         }
@@ -168,7 +197,8 @@ class MyBike extends Component {
                     {timerOrRefresh}
                 </View>
                 <View style={styles.endRent}>
-                    <TouchableOpacity disabled={!this.state.startDate} style={this.state.startDate ? styles.endRentButton : styles.disabledButton}
+                    <TouchableOpacity disabled={!this.state.startDate}
+                                      style={this.state.startDate ? styles.endRentButton : styles.disabledButton}
                                       onPress={() => this.endRent()}>
                         <Text style={styles.buttonText}>End rent</Text>
                     </TouchableOpacity>
