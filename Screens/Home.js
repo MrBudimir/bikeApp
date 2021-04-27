@@ -7,6 +7,7 @@ import Popup from "../components/Popup";
 import FlashMessage from "react-native-flash-message";
 import { showMessage } from "react-native-flash-message";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 class Home extends Component {
   region = {
@@ -14,13 +15,12 @@ class Home extends Component {
     longitude: 15.438058106976376,
     latitudeDelta: 0.04864195044303443,
     longitudeDelta: 0.040142817690068,
-
   };
   state = {
     showPopup: false,
     mapData: [],
   };
-  email = "PetraMeier@gmail.com";
+  email = AsyncStorage.getItem("userData").email;
 
   constructor() {
     super();
@@ -50,7 +50,7 @@ class Home extends Component {
   onCarouselItemChange = (index) => {
     let marker = this.state.mapData[index];
 
-    _map.animateToRegion({
+    this._map.animateToRegion({
       latitude: marker.address.latitude,
       longitude: marker.address.longitude,
       latitudeDelta: 0.04864195044303443,
@@ -80,7 +80,7 @@ class Home extends Component {
   };
 
   onMarkerPressed = (index) => {
-    _carousel.snapToItem(index);
+    this._carousel.snapToItem(index);
   };
 
   closePopup = () => {
@@ -117,7 +117,9 @@ class Home extends Component {
         />
         <Text style={styles.title}>{item.address.streetName}</Text>
         <View>
-          <Text style={styles.infoText}>{item.availableBikes} bikes available</Text>
+          <Text style={styles.infoText}>
+            {item.availableBikes} bikes available
+          </Text>
         </View>
         <TouchableOpacity
           style={styles.button}
@@ -139,7 +141,7 @@ class Home extends Component {
         <MapView
           style={styles.map}
           initialRegion={this.region}
-          ref={(ref) => (_map = ref)}
+          ref={(ref) => (this._map = ref)}
         >
           {this.state.mapData.map((marker, index) => {
             const location = {
@@ -171,7 +173,7 @@ class Home extends Component {
         </MapView>
         <Carousel
           ref={(ref) => {
-            _carousel = ref;
+            this._carousel = ref;
           }}
           data={this.state.mapData}
           sliderWidth={300}
