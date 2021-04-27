@@ -117,7 +117,7 @@ class Home extends Component {
         />
         <Text style={styles.title}>{item.address.streetName}</Text>
         <View>
-          <Text style={styles.infoText}>{item.capacity} bikes available</Text>
+          <Text style={styles.infoText}>{item.availableBikes} bikes available</Text>
         </View>
         <TouchableOpacity
           style={styles.button}
