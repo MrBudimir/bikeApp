@@ -36,6 +36,7 @@ class MyBike extends Component {
     async componentDidMount() {
         this.email = await this.getUserData()
         this.getCurrentInvoice(this.email)
+
         this.props.navigation.addListener('focus', () => {
             this.getCurrentInvoice(this.email);
         });
@@ -59,6 +60,12 @@ class MyBike extends Component {
     componentWillUnmount() {
         clearInterval(this.state.timer);
 
+        if (this.props.navigation.event) {
+            this.props.navigation.removeEventListener('focus', () => {
+                this.getCurrentInvoice(this.email);
+            });
+        }
+
         AppState.removeEventListener("change", this._handleAppStateChange);
     }
 
@@ -67,10 +74,11 @@ class MyBike extends Component {
             this.state.appState.match(/inactive|background/) &&
             nextAppState === "active"
         ) {
-            console.log("Maybe here some BIKE REST Calls: coming from background");
+            console.log("BIKE:coming from background");
+            this.getCurrentInvoice(this.email)
         }
 
-        this.setState({ appState: nextAppState });
+        this.setState({appState: nextAppState});
     };
 
     updateClock = () => {
@@ -101,7 +109,6 @@ class MyBike extends Component {
     getCurrentInvoice(emailOfUser) {
         const Url = "http://84.112.202.204:5567/invoices/currentInvoice";
 
-        console.log(emailOfUser)
         const params = {
             params: {
                 email: emailOfUser
@@ -157,6 +164,8 @@ class MyBike extends Component {
                     })
                 }
             }).catch((err) => console.log(err));
+
+        //    TODO if not ended, persist Request in Async and save again if navigate to here
     }
 
     render() {
