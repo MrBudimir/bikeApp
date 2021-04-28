@@ -9,6 +9,7 @@ import {
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import axios from "axios";
 import {AsyncStorage} from "react-native";
+import {BASE_URL, BASE_USER, LOGIN} from "../../constants";
 
 class Login extends Component {
   state = {
@@ -26,7 +27,7 @@ class Login extends Component {
   };
 
   login = () => {
-    const url = "http://84.112.202.204:5567/users/login";
+    const url = BASE_URL + BASE_USER + LOGIN;
 
     const params = {
       params: {

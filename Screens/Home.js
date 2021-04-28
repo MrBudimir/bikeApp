@@ -8,6 +8,7 @@ import FlashMessage from "react-native-flash-message";
 import { showMessage } from "react-native-flash-message";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {BASE_INVOICE, BASE_RENT_STATION, BASE_URL, GET_ALL_STATIONS, RENT_BIKE} from "../constants";
 
 class Home extends Component {
   region = {
@@ -29,7 +30,7 @@ class Home extends Component {
   getMapData() {
     const cancelToken = axios.CancelToken;
     const source = cancelToken.source();
-    const url = "http://84.112.202.204:5567/RentStation/allStations";
+    const url = BASE_URL + BASE_RENT_STATION + GET_ALL_STATIONS;
 
     axios
       .get(url, { cancelToken: source.token })
@@ -90,7 +91,7 @@ class Home extends Component {
   rentBike = (currentStationId) => {
     this.closePopup();
 
-    const url = "http://84.112.202.204:5567/invoices/rentBike";
+    const url = BASE_URL + BASE_INVOICE + RENT_BIKE;
 
     const params = {
       params: {
