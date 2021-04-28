@@ -11,6 +11,7 @@ import React, {Component} from "react";
 import axios from "axios";
 import ConfirmSavePopup from "../components/ConfirmSavePopup";
 import {AsyncStorage} from "react-native";
+import {BASE_URL, BASE_USER, GET_USER, USER_EDIT} from "../constants";
 
 class MyProfile extends Component {
 
@@ -80,7 +81,7 @@ class MyProfile extends Component {
 
     getCurrentUser(emailOfUser) {
         // this.props.navigation.navigate('MyBike')
-        const Url = "http://84.112.202.204:5567/users/profile";
+        const url = BASE_URL + BASE_USER + GET_USER;
 
         const params = {
             params: {
@@ -89,7 +90,7 @@ class MyProfile extends Component {
         };
 
         axios
-            .get(Url, params)
+            .get(url, params)
             .then((user) => {
                 let currentUser = user.data;
                 if (currentUser) {
@@ -102,28 +103,28 @@ class MyProfile extends Component {
     }
 
     save() {
-        const Url = "http://84.112.202.204:5567/users/profile/edit";
+        const url = BASE_URL + BASE_USER + USER_EDIT
 
         const params = {
             params: {
-                email: this.state.user.email,
-                password: this.state.newPassword,
-                firstName: this.state.newFirstName,
-                lastName: this.state.newLastName
+                email: this.state.newEmail ? this.state.newEmail : this.state.user.email,
+                password: this.state.newPassword ? this.state.newPassword : this.state.user.password,
+                lastName: this.state.newLastName ? this.state.newLastName : this.state.user.lastName,
+                firstName: this.state.newFirstName ? this.state.newFirstName : this.state.user.firstName
             },
         };
 
-        axios.post(Url, null, params)
+        axios.post(url, null, params)
             .then((response) => {
                 if (response.data) {
                     console.log(response.data)
                     this.setState({
                         editView: false,
                         user: {
-                            password: this.state.newPassword ? this.state.newPassword : this.state.user.password,
-                            lastName: this.state.newLastName ? this.state.newLastName : this.state.user.lastName,
-                            firstName: this.state.newFirstName ? this.state.newFirstName : this.state.user.firstName,
-                            email: this.state.newEmail ? this.state.newEmail : this.state.user.email
+                            password: response.data.password,
+                            lastName: response.data.lastName,
+                            firstName: response.data.firstName,
+                            email: response.data.email
                         }
                     });
                 } else {
@@ -133,7 +134,7 @@ class MyProfile extends Component {
 
         this.closePopup()
 
-    //    TODO if not saved persist in Async and save again if navigate to here
+    //    TODO if not saved persist in Async and save again if navigate to here...have to push backend to work
 
     }
 

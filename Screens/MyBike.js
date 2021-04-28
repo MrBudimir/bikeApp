@@ -10,6 +10,7 @@ import 'intl';
 import 'intl/locale-data/jsonp/de';
 import 'intl/locale-data/jsonp/en';
 import {AsyncStorage} from "react-native";
+import {BASE_INVOICE, BASE_URL, END_RENT, GET_CURRENT_INVOICE} from "../constants";
 
 class MyBike extends Component {
 
@@ -107,7 +108,7 @@ class MyBike extends Component {
     }
 
     getCurrentInvoice(emailOfUser) {
-        const Url = "http://84.112.202.204:5567/invoices/currentInvoice";
+        const url = BASE_URL + BASE_INVOICE + GET_CURRENT_INVOICE;
 
         const params = {
             params: {
@@ -115,7 +116,7 @@ class MyBike extends Component {
             },
         };
 
-        axios.get(Url, params)
+        axios.get(url, params)
             .then((invoice) => {
                 let newInvoice = invoice.data;
                 let dateObject;
@@ -147,7 +148,7 @@ class MyBike extends Component {
     }
 
     endRent() {
-        const Url = "http://84.112.202.204:5567/invoices/endRent";
+        const url = BASE_URL + BASE_INVOICE + END_RENT;
 
         const params = {
             params: {
@@ -155,7 +156,7 @@ class MyBike extends Component {
             },
         };
 
-        axios.post(Url, null, params)
+        axios.post(url, null, params)
             .then((response) => {
                 if (response.data) {
                     this.setState({
