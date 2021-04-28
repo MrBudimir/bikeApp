@@ -8,14 +8,16 @@ import {
 } from "react-native";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import axios from "axios";
-import {AsyncStorage} from "react-native";
-import {BASE_URL, BASE_USER, LOGIN} from "../../constants";
+import { AsyncStorage } from "react-native";
+import { BASE_URL, BASE_USER, LOGIN, USER_DATA_KEY } from "../../constants";
+import DeviceStorage from "../../storage/DeviceStorage";
 
 class Login extends Component {
   state = {
     enteredEmail: "PetraMeier@gmail.com",
     enteredPassword: "testPw",
   };
+  storage = new DeviceStorage();
 
   wrongLoginData = () => {
     showMessage({
@@ -42,19 +44,11 @@ class Login extends Component {
         if (!response.data) {
           this.wrongLoginData();
         } else {
-          this.storeData(response.data);
+          this.storage.storeData(USER_DATA_KEY, response.data);
           this.props.navigation.navigate("tabNavigator");
         }
       })
       .catch((err) => console.log(err));
-  };
-
-  storeData = async (user) => {
-    try {
-      await AsyncStorage.setItem("userData", JSON.stringify(user));
-    } catch (err) {
-      console.log("Store Token", err);
-    }
   };
 
   render() {
@@ -116,7 +110,6 @@ class Login extends Component {
             </Text>
           </TouchableOpacity>
         </View>
-        <FlashMessage position="top" autoHide={false} />
       </View>
     );
   }

@@ -7,8 +7,15 @@ import Popup from "../components/Popup";
 import FlashMessage from "react-native-flash-message";
 import { showMessage } from "react-native-flash-message";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {BASE_INVOICE, BASE_RENT_STATION, BASE_URL, GET_ALL_STATIONS, RENT_BIKE} from "../constants";
+import {
+  BASE_INVOICE,
+  BASE_RENT_STATION,
+  BASE_URL,
+  GET_ALL_STATIONS,
+  RENT_BIKE,
+  USER_DATA_KEY,
+} from "../constants";
+import DeviceStorage from "../storage/DeviceStorage";
 
 class Home extends Component {
   region = {
@@ -21,7 +28,8 @@ class Home extends Component {
     showPopup: false,
     mapData: [],
   };
-  email = AsyncStorage.getItem("userData").email;
+  storage = new DeviceStorage();
+  email = null;
 
   constructor() {
     super();
@@ -44,8 +52,10 @@ class Home extends Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.getMapData();
+    let userStorageData = await this.storage.fetchData(USER_DATA_KEY);
+    this.email = userStorageData.email;
   }
 
   onCarouselItemChange = (index) => {
@@ -92,6 +102,7 @@ class Home extends Component {
     this.closePopup();
 
     const url = BASE_URL + BASE_INVOICE + RENT_BIKE;
+    console.log(this.email);
 
     const params = {
       params: {
@@ -103,7 +114,7 @@ class Home extends Component {
     axios
       .post(url, null, params)
       .then((response) => {
-        console.log(response);
+        this.showSuccessMessage();
       })
       .catch((err) => this.showFailMessage(err));
   };
