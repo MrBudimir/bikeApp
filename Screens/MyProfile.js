@@ -10,12 +10,14 @@ import {
 import React, {Component} from "react";
 import axios from "axios";
 import ConfirmSavePopup from "../components/ConfirmSavePopup";
-import {AsyncStorage} from "react-native";
-import {BASE_URL, BASE_USER, GET_USER, USER_EDIT} from "../constants";
+import {BASE_URL, BASE_USER, FAILED_REQUEST_PROFILE_KEY, GET_USER, USER_DATA_KEY, USER_EDIT} from "../constants";
+import DeviceStorage from "../storage/DeviceStorage";
+import {showMessage} from "react-native-flash-message";
 
 class MyProfile extends Component {
 
-    email = null
+    userFromStorage = null
+    failedRequestData = null
     state = {
         user: {
             firstName: null,
@@ -31,36 +33,30 @@ class MyProfile extends Component {
         editView: false,
         showPopup: false
     };
+    storage = new DeviceStorage();
 
     constructor() {
         super();
     }
 
     async componentDidMount() {
-        this.email = await this.getUserData();
-        this.getCurrentUser(this.email);
+        //TODO also if mount request to save
+        this.userFromStorage = await this.storage.fetchData(USER_DATA_KEY);
+        this.getCurrentUser();
 
         this.props.navigation.addListener("focus", () => {
-            this.getCurrentUser(this.email);
+            this._handleGettingBackOnline()
+            this.getCurrentUser();
         });
 
         AppState.addEventListener("change", this._handleAppStateChange);
     }
 
-    getUserData = async () => {
-        try {
-            let userData = await AsyncStorage.getItem("userData");
-            let data = JSON.parse(userData);
-            return data.email
-        } catch (err) {
-            console.log("Get Token", err);
-        }
-    };
-
-    componentWillUnmount() {
+    async componentWillUnmount() {
         if (this.props.navigation.event) {
             this.props.navigation.removeEventListener("focus", () => {
-                this.getCurrentUser(this.email);
+                this._handleGettingBackOnline()
+                this.getCurrentUser();
             });
         }
 
@@ -73,19 +69,33 @@ class MyProfile extends Component {
             nextAppState === "active"
         ) {
             console.log('PROFILE: coming from background')
+            this._handleGettingBackOnline().then(r => console.log("unbound"))
             this.getCurrentUser(this.email);
         }
 
         this.setState({appState: nextAppState});
     };
 
-    getCurrentUser(emailOfUser) {
-        // this.props.navigation.navigate('MyBike')
+    async _handleGettingBackOnline() {
+        this.userFromStorage = await this.storage.fetchData(USER_DATA_KEY);
+        if (this.userFromStorage.requestNeeded) {
+            this.handleSave({
+                params: {
+                    firstName: this.userFromStorage.firstName,
+                    lastName: this.userFromStorage.lastName,
+                    password: this.userFromStorage.password,
+                    email: this.userFromStorage.email
+                }
+            })
+        }
+    }
+
+    getCurrentUser() {
         const url = BASE_URL + BASE_USER + GET_USER;
 
         const params = {
             params: {
-                email: emailOfUser,
+                email: this.userFromStorage.email,
             },
         };
 
@@ -99,43 +109,84 @@ class MyProfile extends Component {
                     });
                 }
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                console.log("Can't get user", err)
+                this.setState({
+                    user: this.userFromStorage
+                })
+            });
     }
 
-    save() {
-        const url = BASE_URL + BASE_USER + USER_EDIT
+    handleSave(paramsFromFailedRequest) {
 
-        const params = {
-            params: {
-                email: this.state.newEmail ? this.state.newEmail : this.state.user.email,
-                password: this.state.newPassword ? this.state.newPassword : this.state.user.password,
-                lastName: this.state.newLastName ? this.state.newLastName : this.state.user.lastName,
-                firstName: this.state.newFirstName ? this.state.newFirstName : this.state.user.firstName
-            },
-        };
+        if (paramsFromFailedRequest) {
+            this.save(paramsFromFailedRequest)
+
+        } else {
+            const params = {
+                params: {
+                    email: this.state.newEmail ? this.state.newEmail : this.state.user.email,
+                    password: this.state.newPassword ? this.state.newPassword : this.state.user.password,
+                    lastName: this.state.newLastName ? this.state.newLastName : this.state.user.lastName,
+                    firstName: this.state.newFirstName ? this.state.newFirstName : this.state.user.firstName
+                },
+            };
+            this.save(params)
+        }
+    }
+
+    save(params) {
+        const url = BASE_URL + BASE_USER + USER_EDIT
 
         axios.post(url, null, params)
             .then((response) => {
                 if (response.data) {
-                    console.log(response.data)
+
                     this.setState({
                         editView: false,
                         user: {
                             password: response.data.password,
                             lastName: response.data.lastName,
                             firstName: response.data.firstName,
-                            email: response.data.email
+                            email: response.data.email,
+                            requestNeeded: false
                         }
                     });
-                } else {
-                    console.log("Save user was not successfully")
+                    this.successfullySaved()
+                    this.storage.storeData(USER_DATA_KEY, this.state.user)
                 }
-            }).catch((err) => console.log(err));
+
+            }).catch((err) => {
+            console.log('Cant save user', err)
+
+            if(!this.userFromStorage.requestNeeded){
+                this.userFromStorage.firstName = params.params.firstName
+                this.userFromStorage.lastName = params.params.lastName
+                this.userFromStorage.password = params.params.password
+                this.userFromStorage.email = params.params.email
+                this.userFromStorage.requestNeeded = true
+                this.setState({
+                    user: this.userFromStorage
+                })
+                this.storage.storeData(USER_DATA_KEY, this.userFromStorage)
+                    .then(r => console.log("stored to storage"))
+            }
+            this.setState({
+                editView: false
+            })
+        });
 
         this.closePopup()
+    }
 
-    //    TODO if not saved persist in Async and save again if navigate to here...have to push backend to work
-
+    successfullySaved() {
+        showMessage({
+            message: "Successful",
+            type: "success",
+            icon: "success",
+            description: "You saved your account successfully!",
+            duration: 2000,
+        })
     }
 
     closePopup = () => {
@@ -188,7 +239,7 @@ class MyProfile extends Component {
                     <ConfirmSavePopup visible={this.state.showPopup}
                                       onCancelPopup={this.closePopup}
                                       password={this.state.user.password}
-                                      onConfirmPopup={() => this.save()}
+                                      onConfirmPopup={() => this.handleSave(null)}
                     />
                     <ScrollView style={styles.editView}>
                         <Text style={styles.formHeader}>First Name</Text>
@@ -313,21 +364,21 @@ const styles = StyleSheet.create({
         width: "100%",
         marginRight: 5,
     },
-    button50:{
+    button50: {
         alignSelf: "center",
         alignItems: "center",
         justifyContent: "center",
         width: "50%",
         height: 55,
     },
-    editView:{
+    editView: {
         height: "80%",
         overflow: "scroll",
     },
     saveButton: {
         backgroundColor: "#2947cb",
     },
-    cancelButton:{
+    cancelButton: {
         backgroundColor: "#f10707",
     },
     saveView: {

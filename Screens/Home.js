@@ -53,6 +53,7 @@ class Home extends Component {
   }
 
   async componentDidMount() {
+    //TODO event for background reload and coming from navigation
     this.getMapData();
     let userStorageData = await this.storage.fetchData(USER_DATA_KEY);
     this.email = userStorageData.email;
@@ -114,6 +115,7 @@ class Home extends Component {
     axios
       .post(url, null, params)
       .then((response) => {
+        this.getMapData();
         this.showSuccessMessage();
       })
       .catch((err) => this.showFailMessage(err));

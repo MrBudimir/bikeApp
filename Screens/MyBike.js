@@ -9,8 +9,8 @@ import axios from "axios";
 import 'intl';
 import 'intl/locale-data/jsonp/de';
 import 'intl/locale-data/jsonp/en';
-import {AsyncStorage} from "react-native";
-import {BASE_INVOICE, BASE_URL, END_RENT, GET_CURRENT_INVOICE} from "../constants";
+import {BASE_INVOICE, BASE_URL, END_RENT, GET_CURRENT_INVOICE, USER_DATA_KEY} from "../constants";
+import DeviceStorage from "../storage/DeviceStorage";
 
 class MyBike extends Component {
 
@@ -29,13 +29,15 @@ class MyBike extends Component {
         appState: AppState.currentState
     }
     options;
+    storage = new DeviceStorage();
 
     constructor() {
         super();
     }
 
     async componentDidMount() {
-        this.email = await this.getUserData()
+        let user = await this.storage.fetchData(USER_DATA_KEY)
+        this.email = user.email;
         this.getCurrentInvoice(this.email)
 
         this.props.navigation.addListener('focus', () => {
@@ -47,16 +49,6 @@ class MyBike extends Component {
 
         AppState.addEventListener("change", this._handleAppStateChange)
     }
-
-    getUserData = async () => {
-        try {
-            let userData = await AsyncStorage.getItem("userData");
-            let data = JSON.parse(userData);
-            return data.email
-        } catch (err) {
-            console.log("Get Token", err);
-        }
-    };
 
     componentWillUnmount() {
         clearInterval(this.state.timer);
@@ -166,7 +158,7 @@ class MyBike extends Component {
                 }
             }).catch((err) => console.log(err));
 
-        //    TODO if not ended, persist Request in Async and save again if navigate to here
+        //    TODO if not ended, persist Request in Async and save again if user navigates to here
     }
 
     render() {
