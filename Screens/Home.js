@@ -102,7 +102,6 @@ class Home extends Component {
     this.closePopup();
 
     const url = BASE_URL + BASE_INVOICE + RENT_BIKE;
-    console.log(this.email);
 
     const params = {
       params: {
@@ -120,6 +119,7 @@ class Home extends Component {
   };
 
   renderCarouselItem({ item }) {
+    let isDisabled = item.availableBikes === 0;
     return (
       <View style={styles.cardContainer}>
         <Popup
@@ -132,14 +132,19 @@ class Home extends Component {
           <Text style={styles.infoText}>{item.availableBikes} available</Text>
         </View>
         <TouchableOpacity
-          style={styles.button}
+          style={isDisabled ? styles.disabledButton : styles.button}
           onPress={() =>
             this.setState({
               showPopup: true,
             })
           }
+          disabled={isDisabled}
         >
-          <Text style={styles.buttonText}> Rent bike</Text>
+          <Text
+            style={isDisabled ? styles.disabledButtonText : styles.buttonText}
+          >
+            Rent bike
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -241,8 +246,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  disabledButton: {
+    opacity: 0.7,
+    alignSelf: "center",
+    marginBottom: 15,
+    width: "50%",
+    height: 45,
+    borderWidth: 3,
+    borderColor: "#EBEBE4",
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   buttonText: {
     color: "#F2AA4CFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  disabledButtonText: {
+    opacity: 0.7,
+    color: "#EBEBE4",
     fontSize: 16,
     fontWeight: "bold",
   },
