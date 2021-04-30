@@ -4,8 +4,6 @@ import MapView, { Marker } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
 import Carousel from "react-native-snap-carousel";
 import Popup from "../components/Popup";
-import FlashMessage from "react-native-flash-message";
-import { showMessage } from "react-native-flash-message";
 import axios from "axios";
 import {
   BASE_INVOICE,
@@ -16,6 +14,7 @@ import {
   USER_DATA_KEY,
 } from "../constants";
 import DeviceStorage from "../storage/DeviceStorage";
+import Message from "../components/Message";
 
 class Home extends Component {
   region = {
@@ -29,6 +28,7 @@ class Home extends Component {
     mapData: [],
   };
   storage = new DeviceStorage();
+  message = new Message();
   email = null;
 
   constructor() {
@@ -70,27 +70,6 @@ class Home extends Component {
     });
   };
 
-  showSuccessMessage = () => {
-    showMessage({
-      message: "Successful",
-      type: "success",
-      icon: "success",
-      description: "You rent a bike successfully!",
-      duration: 2000,
-    });
-  };
-
-  showFailMessage = (err) => {
-    showMessage({
-      message: "Fail",
-      type: "danger",
-      icon: "danger",
-      description: "Oops, something went wrong!",
-      duration: 2000,
-    });
-    console.log(err);
-  };
-
   onMarkerPressed = (index) => {
     this._carousel.snapToItem(index);
   };
@@ -115,9 +94,9 @@ class Home extends Component {
       .post(url, null, params)
       .then((response) => {
         this.getMapData();
-        this.showSuccessMessage();
+        this.message.showSuccessMessage();
       })
-      .catch((err) => this.showFailMessage(err));
+      .catch((err) => this.message.showFailMessage(err));
   };
 
   renderCarouselItem({ item }) {

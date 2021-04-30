@@ -6,9 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import FlashMessage, { showMessage } from "react-native-flash-message";
+import Message from "../../components/Message";
 import axios from "axios";
-import { AsyncStorage } from "react-native";
 import { BASE_URL, BASE_USER, LOGIN, USER_DATA_KEY } from "../../constants";
 import DeviceStorage from "../../storage/DeviceStorage";
 
@@ -18,15 +17,7 @@ class Login extends Component {
     enteredPassword: "testPw",
   };
   storage = new DeviceStorage();
-
-  wrongLoginData = () => {
-    showMessage({
-      message: "Login Failed",
-      type: "danger",
-      icon: "danger",
-      description: "Wrong E-mail or Password!",
-    });
-  };
+  message = new Message();
 
   login = () => {
     const url = BASE_URL + BASE_USER + LOGIN;
@@ -42,7 +33,7 @@ class Login extends Component {
       .get(url, params)
       .then((response) => {
         if (!response.data) {
-          this.wrongLoginData();
+          this.message.wrongLoginData();
         } else {
           this.storage.storeData(USER_DATA_KEY, response.data);
           this.props.navigation.navigate("tabNavigator");
