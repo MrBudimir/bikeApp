@@ -32,6 +32,7 @@ class Home extends Component {
   state = {
     showPopup: false,
     mapData: [],
+    appState: AppState.currentState,
   };
   storage = new DeviceStorage();
   message = new Message();
