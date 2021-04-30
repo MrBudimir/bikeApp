@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  AppState,
+} from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
 import Carousel from "react-native-snap-carousel";
@@ -57,7 +63,25 @@ class Home extends Component {
     this.getMapData();
     let userStorageData = await this.storage.fetchData(USER_DATA_KEY);
     this.email = userStorageData.email;
+
+    this.props.navigation.addListener("focus", () => {
+      this.getMapData();
+    });
+
+    AppState.addEventListener("change", this._handleAppStateChange);
   }
+
+  _handleAppStateChange = (nextAppState) => {
+    if (
+      this.state.appState.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      console.log("STATION:coming from background");
+      this.getMapData();
+    }
+
+    this.setState({ appState: nextAppState });
+  };
 
   onCarouselItemChange = (index) => {
     let marker = this.state.mapData[index];
