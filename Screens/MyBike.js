@@ -9,7 +9,15 @@ import axios from "axios";
 import 'intl';
 import 'intl/locale-data/jsonp/de';
 import 'intl/locale-data/jsonp/en';
-import {BASE_INVOICE, BASE_URL, CURRENT_INVOICE_KEY, END_RENT, GET_CURRENT_INVOICE, USER_DATA_KEY} from "../constants";
+import {
+    BASE_INVOICE,
+    BASE_URL,
+    COSTS_PER_MIN,
+    CURRENT_INVOICE_KEY,
+    END_RENT,
+    GET_CURRENT_INVOICE,
+    USER_DATA_KEY
+} from "../constants";
 import DeviceStorage from "../storage/DeviceStorage";
 import Message from "../components/Message";
 
@@ -33,6 +41,7 @@ class MyBike extends Component {
     storage = new DeviceStorage();
     invoiceFromStorage = null;
     message = new Message();
+    duration = 0;
 
     constructor() {
         super();
@@ -81,7 +90,6 @@ class MyBike extends Component {
             nextAppState === "active"
         ) {
             console.log("BIKE:coming from background");
-            this.getCurrentInvoice(this.email)
             this._handleGettingBackOnline().then(r => {
                 console.log("handled getting back online");
             })
@@ -96,6 +104,7 @@ class MyBike extends Component {
         let startStamp = new Date(this.state.startDate).getTime()
 
         let diff = Math.round((newStamp - startStamp) / 1000);
+        this.duration = diff;
 
         let d = Math.floor(diff / (24 * 60 * 60));
         diff = diff - (d * 24 * 60 * 60);
@@ -211,6 +220,12 @@ class MyBike extends Component {
         })
     }
 
+    formatEuro(number) {
+        return new Intl.NumberFormat('de-DE',
+            { style: 'currency', currency: 'EUR' })
+            .format(number)
+    }
+
     render() {
         const {days, hours, minutes, seconds} = this.state.timerProperties
         let timerOrRefresh;
@@ -247,6 +262,17 @@ class MyBike extends Component {
                 </View>
                 <View style={styles.rentTimeContainer}>
                     {timerOrRefresh}
+                    <View style={styles.costsContainer}>
+                        <Text>
+                            Your costs so far:
+                        </Text>
+                        <Text style={styles.costs}>
+                            {this.formatEuro((this.duration / 60) * COSTS_PER_MIN)}
+                        </Text>
+                    </View>
+                </View>
+                <View>
+
                 </View>
                 <View style={styles.endRent}>
                     <TouchableOpacity disabled={!this.state.startDate}
@@ -334,7 +360,16 @@ const styles = StyleSheet.create({
         width: "100%",
         color: '#666666',
         borderColor: "#000000",
+    },
+    costs: {
+        fontWeight: "bold",
+        marginLeft: 5
+    },
+    costsContainer: {
+        flex: 1,
+        flexDirection: "row"
     }
+
 });
 
 export default MyBike;
