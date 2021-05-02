@@ -14,7 +14,7 @@ import axios from "axios";
 import {
   BASE_INVOICE,
   BASE_RENT_STATION,
-  BASE_URL,
+  BASE_URL, CURRENT_INVOICE_KEY,
   GET_ALL_STATIONS,
   RENT_BIKE,
   USER_DATA_KEY,
@@ -60,7 +60,6 @@ class Home extends Component {
   }
 
   async componentDidMount() {
-    //TODO event for background reload and coming from navigation
     this.getMapData();
     let userStorageData = await this.storage.fetchData(USER_DATA_KEY);
     this.email = userStorageData.email;
@@ -103,6 +102,7 @@ class Home extends Component {
     this.setState({ showPopup: false });
   };
 
+  //TODO always uses the same stationID!
   rentBike = (currentStationId) => {
     this.closePopup();
 
@@ -118,6 +118,8 @@ class Home extends Component {
     axios
       .post(url, null, params)
       .then((response) => {
+        this.storage.storeData(CURRENT_INVOICE_KEY, response.data)
+            .then(r => console.log("successfully stored invoice"));
         this.getMapData();
         this.message.showSuccessMessage();
       })

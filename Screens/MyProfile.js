@@ -13,7 +13,6 @@ import ConfirmSavePopup from "../components/ConfirmSavePopup";
 import {
   BASE_URL,
   BASE_USER,
-  FAILED_REQUEST_PROFILE_KEY,
   GET_USER,
   USER_DATA_KEY,
   USER_EDIT,
@@ -23,7 +22,6 @@ import Message from "../components/Message";
 
 class MyProfile extends Component {
   userFromStorage = null;
-  failedRequestData = null;
   state = {
     user: {
       firstName: null,
@@ -47,13 +45,11 @@ class MyProfile extends Component {
   }
 
   async componentDidMount() {
-    //TODO also if mount request to save
     this.userFromStorage = await this.storage.fetchData(USER_DATA_KEY);
-    this.getCurrentUser();
+    await this._handleGettingBackOnline()
 
     this.props.navigation.addListener("focus", () => {
       this._handleGettingBackOnline();
-      this.getCurrentUser();
     });
 
     AppState.addEventListener("change", this._handleAppStateChange);
@@ -63,7 +59,6 @@ class MyProfile extends Component {
     if (this.props.navigation.event) {
       this.props.navigation.removeEventListener("focus", () => {
         this._handleGettingBackOnline();
-        this.getCurrentUser();
       });
     }
 
@@ -84,6 +79,7 @@ class MyProfile extends Component {
   };
 
   async _handleGettingBackOnline() {
+    this.getCurrentUser();
     this.userFromStorage = await this.storage.fetchData(USER_DATA_KEY);
     if (this.userFromStorage.requestNeeded) {
       this.handleSave({

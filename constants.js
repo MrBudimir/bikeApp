@@ -18,3 +18,5 @@ export const GET_ALL_STATIONS = "/allStations";
 
 // STORAGE KEYS
 export const USER_DATA_KEY = "userData";
+export const CURRENT_INVOICE_KEY = "currentRent";
+

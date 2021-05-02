@@ -9,8 +9,9 @@ import axios from "axios";
 import 'intl';
 import 'intl/locale-data/jsonp/de';
 import 'intl/locale-data/jsonp/en';
-import {BASE_INVOICE, BASE_URL, END_RENT, GET_CURRENT_INVOICE, USER_DATA_KEY} from "../constants";
+import {BASE_INVOICE, BASE_URL, CURRENT_INVOICE_KEY, END_RENT, GET_CURRENT_INVOICE, USER_DATA_KEY} from "../constants";
 import DeviceStorage from "../storage/DeviceStorage";
+import Message from "../components/Message";
 
 class MyBike extends Component {
 
@@ -30,18 +31,21 @@ class MyBike extends Component {
     }
     options;
     storage = new DeviceStorage();
+    invoiceFromStorage = null;
+    message = new Message();
 
     constructor() {
         super();
     }
 
     async componentDidMount() {
-        let user = await this.storage.fetchData(USER_DATA_KEY)
+        let user = await this.storage.fetchData(USER_DATA_KEY);
         this.email = user.email;
-        this.getCurrentInvoice(this.email)
+        this.invoiceFromStorage = await this.storage.fetchData(CURRENT_INVOICE_KEY);
+        await this._handleGettingBackOnline();
 
         this.props.navigation.addListener('focus', () => {
-            this.getCurrentInvoice(this.email);
+            this._handleGettingBackOnline()
         });
 
         let timer = setInterval(this.updateClock, 1000);
@@ -50,16 +54,25 @@ class MyBike extends Component {
         AppState.addEventListener("change", this._handleAppStateChange)
     }
 
-    componentWillUnmount() {
+    async componentWillUnmount() {
         clearInterval(this.state.timer);
 
         if (this.props.navigation.event) {
             this.props.navigation.removeEventListener('focus', () => {
-                this.getCurrentInvoice(this.email);
+                this._handleGettingBackOnline();
             });
         }
 
         AppState.removeEventListener("change", this._handleAppStateChange);
+    }
+
+    async _handleGettingBackOnline() {
+        this.invoiceFromStorage = await this.storage.fetchData(CURRENT_INVOICE_KEY);
+        if (this.invoiceFromStorage.requestNeeded) {
+            this.endRent()
+        } else {
+            this.getCurrentInvoice(this.email);
+        }
     }
 
     _handleAppStateChange = nextAppState => {
@@ -69,6 +82,9 @@ class MyBike extends Component {
         ) {
             console.log("BIKE:coming from background");
             this.getCurrentInvoice(this.email)
+            this._handleGettingBackOnline().then(r => {
+                console.log("handled getting back online");
+            })
         }
 
         this.setState({appState: nextAppState});
@@ -119,10 +135,30 @@ class MyBike extends Component {
                         currentInvoice: newInvoice,
                         startDate: dateObject
                     })
-
                 }
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                console.log(this.invoiceFromStorage)
+                if(this.isEmpty(this.state.currentInvoice) && !this.isEmpty(this.invoiceFromStorage)){
+                    console.log("Could not get invoice from db, instead using invoice from storage if existing", err);
+
+                    let dateObject = Date.parse(this.invoiceFromStorage.startDate);
+                    console.log(dateObject)
+                    this.invoiceFromStorage.startDate = this.formatDate(dateObject)
+                    this.setState({
+                        currentInvoice: this.invoiceFromStorage,
+                        startDate: dateObject
+                    });
+                }
+            });
+    }
+
+    isEmpty(obj) {
+        for(let key in obj) {
+            if(obj.hasOwnProperty(key))
+                return false;
+        }
+        return true;
     }
 
     formatDate(dateObject) {
@@ -144,21 +180,35 @@ class MyBike extends Component {
 
         const params = {
             params: {
-                invoiceId: this.state.currentInvoice.id
+                invoiceId: this.invoiceFromStorage.id,
+                endDate: this.invoiceFromStorage.endDate ? this.invoiceFromStorage.endDate : new Date().getTime()
             },
         };
 
         axios.post(url, null, params)
             .then((response) => {
-                if (response.data) {
-                    this.setState({
-                        currentInvoice: {},
-                        startDate: null
-                    })
-                }
-            }).catch((err) => console.log(err));
+                this.storage.storeData(CURRENT_INVOICE_KEY, {})
+                    .then(r => console.log("Stored data of current invoice"))
 
-        //    TODO if not ended, persist Request in Async and save again if user navigates to here
+                this.message.successMessage("End Rent", "You successfully ended your rent!")
+
+            }).catch((err) => {
+                console.log("some error here mate")
+                if(!this.invoiceFromStorage.requestNeeded){
+                    console.log("Could not end rent but request will be saved to end rent later", err);
+
+                    let invoiceWithRequestState = this.invoiceFromStorage;
+                    invoiceWithRequestState.requestNeeded = true;
+                    invoiceWithRequestState.endDate = new Date().getTime();
+
+                    this.storage.storeData(CURRENT_INVOICE_KEY, invoiceWithRequestState)
+                        .then(r => console.log("Stored data of current invoice"))
+                }
+        });
+        this.setState({
+            currentInvoice: {},
+            startDate: null
+        })
     }
 
     render() {
