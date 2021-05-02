@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  FlatList
 } from "react-native";
 import React, { Component } from "react";
 import axios from "axios";
@@ -193,11 +194,30 @@ class MyProfile extends Component {
     this.setState({ showPopup: false });
   };
 
+  formatDate(dateString) {
+    if (dateString){
+      let dateObject = Date.parse(dateString)
+      this.options = {
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric',
+        timeZone: 'UTC',
+        timeZoneName: 'short'
+      };
+      return new Intl.DateTimeFormat('de-DE', this.options).format(dateObject);
+    } else {
+      return "rent is ended"
+    }
+  }
+
   render() {
     if (!this.state.editView) {
       return (
         <View style={styles.screen}>
-          <View>
+          <View style={styles.outputView}>
             <Text style={styles.formHeader}>First Name</Text>
             <Text style={styles.formContent}>
               {this.state.user ? this.state.user.firstName : ""}
@@ -222,6 +242,18 @@ class MyProfile extends Component {
             >
               <Text style={styles.buttonText}>Edit Profile</Text>
             </TouchableOpacity>
+          </View>
+          <View style={styles.invoiceHistory}>
+            <Text style={styles.formHeader}>Invoice History</Text>
+            <View style={styles.listItemContainer}>
+              <FlatList
+                  data={this.state.user.invoices}
+                  renderItem={({item}) => <Text
+                      style={styles.listItem}>
+                    {this.formatDate(item.startDate)}until {this.formatDate(item.endDate)}- {item.ebike.model}
+                  </Text>}
+              />
+            </View>
           </View>
           <View style={styles.logoutView}>
             <TouchableOpacity
@@ -334,10 +366,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     flexDirection: "row",
+    height: "10%"
   },
   logoutButton: {
     alignSelf: "center",
-    height: 55,
+    height: "100%",
     borderColor: "#000000",
     backgroundColor: "#f10707",
     alignItems: "center",
@@ -349,11 +382,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  outputView:{
+    height: "40%"
+  },
   editViewButton: {
     width: "50%",
     alignItems: "center",
     alignSelf: "flex-end",
     justifyContent: "flex-start",
+    height: "10%"
   },
   editButton: {
     borderRadius: 15,
@@ -396,6 +433,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 15,
   },
+  listItem: {
+    padding: 8,
+    fontSize: 13,
+    height: "auto",
+    backgroundColor: 'grey',
+    borderColor: 'black',
+    borderWidth: 1,
+  },
+  listItemContainer: {
+    paddingTop: 10,
+    paddingBottom: 45,
+  },
+  invoiceHistory: {
+    height: "40%",
+  }
 });
 
 export default MyProfile;

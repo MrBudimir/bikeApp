@@ -228,15 +228,27 @@ class MyBike extends Component {
 
     render() {
         const {days, hours, minutes, seconds} = this.state.timerProperties
+
         let timerOrRefresh;
+        let costs;
         if (this.state.startDate) {
+
             timerOrRefresh = <View style={styles.timer}><Text
                 style={styles.timerText}>{`${days} d: ${hours} h: ${minutes} m: ${seconds} s`}</Text></View>;
+            costs = <View style={styles.costsContainer} >
+                <Text>
+                    Your costs so far:
+                </Text>
+                <Text style={styles.costs}>
+                    {this.formatEuro((this.duration / 60) * COSTS_PER_MIN)}
+                </Text>
+            </View>
         } else {
             timerOrRefresh =
                 <TouchableOpacity style={styles.refresh} onPress={() => this.getCurrentInvoice(this.email)}>
                     <Text style={styles.buttonText}>Refresh...</Text>
                 </TouchableOpacity>;
+
         }
         return (
             <View>
@@ -262,14 +274,7 @@ class MyBike extends Component {
                 </View>
                 <View style={styles.rentTimeContainer}>
                     {timerOrRefresh}
-                    <View style={styles.costsContainer}>
-                        <Text>
-                            Your costs so far:
-                        </Text>
-                        <Text style={styles.costs}>
-                            {this.formatEuro((this.duration / 60) * COSTS_PER_MIN)}
-                        </Text>
-                    </View>
+                    {costs}
                 </View>
                 <View>
 
