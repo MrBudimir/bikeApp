@@ -189,7 +189,7 @@ class MyBike extends Component {
 
         const params = {
             params: {
-                invoiceId: this.invoiceFromStorage.id,
+                invoiceId: this.invoiceFromStorage.id ? this.invoiceFromStorage.id : this.state.currentInvoice.id,
                 endDate: this.invoiceFromStorage.endDate ? this.invoiceFromStorage.endDate : new Date().getTime()
             },
         };

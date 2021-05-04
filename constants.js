@@ -11,13 +11,14 @@ export const BASE_INVOICE = "/invoices";
 export const RENT_BIKE = "/rentBike";
 export const END_RENT = "/endRent";
 export const GET_CURRENT_INVOICE = "/currentInvoice";
-export const COSTS_PER_MIN = 0.10;
+export const COSTS_PER_MIN = 1;
 
-// RENTSATION
+// RENTSTATION
 export const BASE_RENT_STATION = "/RentStation";
 export const GET_ALL_STATIONS = "/allStations";
 
 // STORAGE KEYS
 export const USER_DATA_KEY = "userData";
 export const CURRENT_INVOICE_KEY = "currentRent";
+export const RENT_STATIONS_KEY = "rentStations";
 

@@ -17,7 +17,7 @@ import {
   BASE_URL,
   CURRENT_INVOICE_KEY,
   GET_ALL_STATIONS,
-  RENT_BIKE,
+  RENT_BIKE, RENT_STATIONS_KEY,
   USER_DATA_KEY,
 } from "../constants";
 import DeviceStorage from "../storage/DeviceStorage";
@@ -39,6 +39,7 @@ class Home extends Component {
   storage = new DeviceStorage();
   message = new Message();
   email = null;
+  rentStationsFromStorage = null;
 
   constructor() {
     super();
@@ -46,6 +47,8 @@ class Home extends Component {
 
   async componentDidMount() {
     let userStorageData = await this.storage.fetchData(USER_DATA_KEY);
+    this.rentStationsFromStorage = await this.storage.fetchData(RENT_STATIONS_KEY)
+
     this.email = userStorageData.email;
     this._handleGettingBackOnline();
 
@@ -56,7 +59,7 @@ class Home extends Component {
     AppState.addEventListener("change", this._handleAppStateChange);
   }
 
-  async componentWillUnmount() {
+  componentWillUnmount() {
     if (this.props.navigation.event) {
       this.props.navigation.removeEventListener("focus", () => {
         this._handleGettingBackOnline();
@@ -66,19 +69,31 @@ class Home extends Component {
     AppState.removeEventListener("change", this._handleAppStateChange);
   }
 
-  _handleGettingBackOnline(){
+  _handleGettingBackOnline() {
     this.getMapData();
+    console.log("getting back", this.rentStationsFromStorage.wantedToRentId)
+    if (typeof (this.rentStationsFromStorage.wantedToRentId) !== 'undefined' && this.rentStationsFromStorage.wantedToRentId !== 0) {
+      this.rentBike(this.rentStationsFromStorage.wantedToRentId);
+    }
   }
 
   getMapData() {
     const url = BASE_URL + BASE_RENT_STATION + GET_ALL_STATIONS;
 
     axios
-      .get(url)
+      .get(url, {})
       .then((stations) => {
         this.setState({ mapData: stations.data });
+
+        this.storage.storeData(RENT_STATIONS_KEY, stations.data)
+            .then(r => console.log("persisted successfully rent stations"))
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        this.setState({
+          mapData: this.rentStationsFromStorage
+        })
+        console.log("Could not get rent stations from server, instead using from storage if existing")
+      });
   }
 
   _handleAppStateChange = (nextAppState) => {
@@ -113,7 +128,6 @@ class Home extends Component {
   };
 
   rentBike = (currentStationId) => {
-    console.log(currentStationId)
     this.closePopup();
 
     const url = BASE_URL + BASE_INVOICE + RENT_BIKE;
@@ -131,12 +145,41 @@ class Home extends Component {
         this.storage
           .storeData(CURRENT_INVOICE_KEY, response.data)
           .then((r) => console.log("successfully stored invoice"));
+
+        if (typeof(this.rentStationsFromStorage.wantedToRentId) !== 'undefined' && this.rentStationsFromStorage.wantedToRentId !== 0){
+          console.log("rend bike", this.rentStationsFromStorage.wantedToRentId)
+          this.rentStationsFromStorage.wantedToRentId = 0;
+          this.storage
+              .storeData(RENT_STATIONS_KEY, this.rentStationsFromStorage)
+              .then((r) => console.log("setting offline request to false"))
+
+          if(response.data){
+            this.message.successMessage("Successful", "Successfully processed old request!")
+          } else {
+            this.message.failMessage("Bike rent failed", "Bike is already in use, could not rent bike (old request)")
+          }
+        }else {
+          if(response.data){
+            this.message.successMessage("Successful", "You rent a bike successfully!")
+          } else {
+            this.message.failMessage("Bike rent failed", "You already rented a bike")
+          }
+        }
+
         this.getMapData();
-        this.message.showSuccessMessage();
-        setTimeout(() => {this.props.navigation.navigate("MyBike");}, 2000);
-        console.log(response.data);
+        setTimeout(() => {this.props.navigation.navigate("MyBike");}, 1000);
+
       })
-      .catch((err) => this.message.showFailMessage(err));
+      .catch((err) => {
+        this.message.failMessage("Bike not rented now"
+            , "We can not reach the server to rent your bike\n" +
+            "Instead we are going to persist your request for later")
+
+        this.rentStationsFromStorage.wantedToRentId = currentStationId;
+        this.storage
+            .storeData(RENT_STATIONS_KEY, this.rentStationsFromStorage)
+            .then((r) => console.log("setting offline request to true"));
+      });
   };
 
   renderCarouselItem({ item }) {

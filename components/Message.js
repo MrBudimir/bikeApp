@@ -50,6 +50,16 @@ class Message {
       duration: 2000,
     });
   }
+
+  failMessage(message, description) {
+    showMessage({
+      message: message,
+      type: "danger",
+      icon: "danger",
+      description: description,
+      duration: 3500,
+    });
+  }
 }
 
 export default Message;
