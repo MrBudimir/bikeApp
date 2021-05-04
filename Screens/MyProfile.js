@@ -260,6 +260,7 @@ class MyProfile extends Component {
                     {this.formatDate(item.endDate)}- {item.ebike.model}
                   </Text>
                 )}
+                keyExtractor={(item) => item.id.toString()}
               />
             </View>
           </View>
