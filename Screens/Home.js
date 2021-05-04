@@ -14,7 +14,8 @@ import axios from "axios";
 import {
   BASE_INVOICE,
   BASE_RENT_STATION,
-  BASE_URL, CURRENT_INVOICE_KEY,
+  BASE_URL,
+  CURRENT_INVOICE_KEY,
   GET_ALL_STATIONS,
   RENT_BIKE,
   USER_DATA_KEY,
@@ -33,6 +34,7 @@ class Home extends Component {
     showPopup: false,
     mapData: [],
     appState: AppState.currentState,
+    stationId: 1,
   };
   storage = new DeviceStorage();
   message = new Message();
@@ -96,7 +98,7 @@ class Home extends Component {
 
   onCarouselItemChange = (index) => {
     let marker = this.state.mapData[index];
-
+    this.setState({ stationId: marker.id });
     this._map.animateToRegion({
       latitude: marker.address.latitude,
       longitude: marker.address.longitude,
@@ -129,8 +131,9 @@ class Home extends Component {
     axios
       .post(url, null, params)
       .then((response) => {
-        this.storage.storeData(CURRENT_INVOICE_KEY, response.data)
-            .then(r => console.log("successfully stored invoice"));
+        this.storage
+          .storeData(CURRENT_INVOICE_KEY, response.data)
+          .then((r) => console.log("successfully stored invoice"));
         this.getMapData();
         this.message.showSuccessMessage();
         console.log(response.data);
@@ -140,14 +143,13 @@ class Home extends Component {
 
   renderCarouselItem({ item }) {
     let isDisabled = item.availableBikes === 0;
+    console.log("render carousel", item.id);
+    let id = item.id;
     return (
       <View style={styles.cardContainer}>
-        <Popup
-          visible={this.state.showPopup}
-          onCancelPopup={this.closePopup}
-          onConfirmPopup={() => this.rentBike(item.id)}
-        />
-        <Text style={styles.title}>{item.address.streetName}</Text>
+        <Text style={styles.title}>
+          {item.address.streetName} {item.id}
+        </Text>
         <View style={{ justifyContent: "center" }}>
           <Text style={styles.infoText}>{item.availableBikes} available</Text>
         </View>
@@ -214,8 +216,14 @@ class Home extends Component {
           sliderWidth={300}
           itemWidth={300}
           renderItem={(ref) => this.renderCarouselItem(ref)}
+          useScrollView={true}
           containerCustomStyle={styles.carousel}
           onSnapToItem={(index) => this.onCarouselItemChange(index)}
+        />
+        <Popup
+          visible={this.state.showPopup}
+          onCancelPopup={this.closePopup}
+          onConfirmPopup={() => this.rentBike(id)}
         />
       </View>
     );
