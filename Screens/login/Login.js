@@ -14,7 +14,7 @@ import DeviceStorage from "../../storage/DeviceStorage";
 class Login extends Component {
   state = {
     enteredEmail: "PetraMeier@gmail.com",
-    enteredPassword: "testPw",
+    enteredPassword: "1234",
   };
   storage = new DeviceStorage();
   message = new Message();
