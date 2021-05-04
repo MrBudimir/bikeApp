@@ -42,6 +42,29 @@ class Home extends Component {
     super();
   }
 
+  async componentDidMount() {
+    //TODO event for background reload and coming from navigation
+    this.getMapData();
+    let userStorageData = await this.storage.fetchData(USER_DATA_KEY);
+    this.email = userStorageData.email;
+
+    this.props.navigation.addListener("focus", () => {
+      this.getMapData();
+    });
+
+    AppState.addEventListener("change", this._handleAppStateChange);
+  }
+
+  componentWillUnmount() {
+    if (this.props.navigation.event) {
+      this.props.navigation.removeEventListener("focus", () => {
+        this.getMapData();
+      });
+    }
+
+    AppState.removeEventListener("change", this._handleAppStateChange);
+  }
+
   getMapData() {
     const cancelToken = axios.CancelToken;
     const source = cancelToken.source();
@@ -57,19 +80,6 @@ class Home extends Component {
     return function cleanup() {
       source.cancel("request canceled");
     };
-  }
-
-  async componentDidMount() {
-    //TODO event for background reload and coming from navigation
-    this.getMapData();
-    let userStorageData = await this.storage.fetchData(USER_DATA_KEY);
-    this.email = userStorageData.email;
-
-    this.props.navigation.addListener("focus", () => {
-      this.getMapData();
-    });
-
-    AppState.addEventListener("change", this._handleAppStateChange);
   }
 
   _handleAppStateChange = (nextAppState) => {
@@ -120,6 +130,7 @@ class Home extends Component {
       .then((response) => {
         this.getMapData();
         this.message.showSuccessMessage();
+        console.log(response.data);
       })
       .catch((err) => this.message.showFailMessage(err));
   };
