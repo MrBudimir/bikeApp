@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
-  FlatList
+  FlatList,
 } from "react-native";
 import React, { Component } from "react";
 import axios from "axios";
@@ -47,7 +47,7 @@ class MyProfile extends Component {
 
   async componentDidMount() {
     this.userFromStorage = await this.storage.fetchData(USER_DATA_KEY);
-    await this._handleGettingBackOnline()
+    await this._handleGettingBackOnline();
 
     this.props.navigation.addListener("focus", () => {
       this._handleGettingBackOnline();
@@ -195,41 +195,47 @@ class MyProfile extends Component {
   };
 
   formatDate(dateString) {
-    if (dateString){
-      let dateObject = Date.parse(dateString)
+    if (dateString) {
+      let dateObject = Date.parse(dateString);
       this.options = {
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric',
-        day: 'numeric',
-        month: 'numeric',
-        year: 'numeric',
-        timeZone: 'UTC',
-        timeZoneName: 'short'
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
+        timeZone: "UTC",
+        timeZoneName: "short",
       };
-      return new Intl.DateTimeFormat('de-DE', this.options).format(dateObject);
+      return new Intl.DateTimeFormat("de-DE", this.options).format(dateObject);
     } else {
-      return "rent is ended"
+      return "rent is ended";
     }
   }
 
   render() {
     if (!this.state.editView) {
       return (
-        <View style={styles.screen}>
-          <View style={styles.outputView}>
-            <Text style={styles.formHeader}>First Name</Text>
-            <Text style={styles.formContent}>
-              {this.state.user ? this.state.user.firstName : ""}
-            </Text>
-            <Text style={styles.formHeader}>Last Name</Text>
-            <Text style={styles.formContent}>
-              {this.state.user ? this.state.user.lastName : ""}
-            </Text>
-            <Text style={styles.formHeader}>Email</Text>
-            <Text style={styles.formContent}>
-              {this.state.user ? this.state.user.email : ""}
-            </Text>
+        <ScrollView style={styles.screen}>
+          <View>
+            <View style={styles.infoView}>
+              <Text style={styles.formHeader}>First Name</Text>
+              <Text style={styles.formContent}>
+                {this.state.user ? this.state.user.firstName : ""}
+              </Text>
+            </View>
+            <View style={styles.infoView}>
+              <Text style={styles.formHeader}>Last Name</Text>
+              <Text style={styles.formContent}>
+                {this.state.user ? this.state.user.lastName : ""}
+              </Text>
+            </View>
+            <View style={styles.infoView}>
+              <Text style={styles.formHeader}>Email</Text>
+              <Text style={styles.formContent}>
+                {this.state.user ? this.state.user.email : ""}
+              </Text>
+            </View>
           </View>
           <View style={styles.editViewButton}>
             <TouchableOpacity
@@ -247,11 +253,13 @@ class MyProfile extends Component {
             <Text style={styles.formHeader}>Invoice History</Text>
             <View style={styles.listItemContainer}>
               <FlatList
-                  data={this.state.user.invoices}
-                  renderItem={({item}) => <Text
-                      style={styles.listItem}>
-                    {this.formatDate(item.startDate)}until {this.formatDate(item.endDate)}- {item.ebike.model}
-                  </Text>}
+                data={this.state.user.invoices}
+                renderItem={({ item }) => (
+                  <Text style={styles.listItem}>
+                    {this.formatDate(item.startDate)}until{" "}
+                    {this.formatDate(item.endDate)}- {item.ebike.model}
+                  </Text>
+                )}
               />
             </View>
           </View>
@@ -263,7 +271,7 @@ class MyProfile extends Component {
               <Text style={styles.buttonText}>Logout</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </ScrollView>
       );
     } else {
       return (
@@ -345,52 +353,51 @@ class MyProfile extends Component {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    height: "100%",
+    backgroundColor: "#101820FF",
   },
   formHeader: {
-    borderBottomWidth: 2,
-    borderStyle: "solid",
-    padding: 10,
-    paddingLeft: 3,
-    borderRadius: 3,
-    fontWeight: "bold",
+    marginTop: 25,
+    color: "#F2AA4CFF",
+    fontSize: 16,
   },
   formContent: {
-    padding: 10,
-    paddingLeft: 3,
+    marginVertical: 25,
     borderRadius: 3,
+    color: "white",
+    fontSize: 20,
+  },
+  infoView: {
+    borderBottomWidth: 1,
+    borderColor: "#F2AA4CFF",
+    borderRadius: 2,
+    marginHorizontal: "5%",
   },
   logoutView: {
+    marginTop: 25,
     alignItems: "center",
     justifyContent: "flex-end",
-    position: "absolute",
-    bottom: 0,
     flexDirection: "row",
-    height: "10%"
   },
   logoutButton: {
     alignSelf: "center",
-    height: "100%",
     borderColor: "#000000",
     backgroundColor: "#f10707",
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
+    height: 55,
   },
   buttonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
   },
-  outputView:{
-    height: "40%"
-  },
   editViewButton: {
     width: "50%",
     alignItems: "center",
     alignSelf: "flex-end",
-    justifyContent: "flex-start",
-    height: "10%"
+    marginTop: 25,
+    marginRight: "5%",
   },
   editButton: {
     borderRadius: 15,
@@ -434,20 +441,21 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   listItem: {
-    padding: 8,
-    fontSize: 13,
+    fontSize: 16,
+    marginTop: 10,
     height: "auto",
-    backgroundColor: 'grey',
-    borderColor: 'black',
-    borderWidth: 1,
+    color: "white",
+    backgroundColor: "#25384A",
   },
   listItemContainer: {
-    paddingTop: 10,
-    paddingBottom: 45,
+    height: "100%",
   },
   invoiceHistory: {
-    height: "40%",
-  }
+    marginTop: 25,
+    marginHorizontal: "5%",
+    height: 250,
+    marginBottom: 50,
+  },
 });
 
 export default MyProfile;
