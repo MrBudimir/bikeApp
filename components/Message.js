@@ -39,6 +39,16 @@ class Message {
       description: "You saved your account successfully!",
       duration: 2000,
     });
+  };
+
+  successMessage(message, description) {
+    showMessage({
+      message: message,
+      type: "success",
+      icon: "success",
+      description: description,
+      duration: 2000,
+    });
   }
 }
 
