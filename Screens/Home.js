@@ -82,21 +82,6 @@ class Home extends Component {
     };
   }
 
-<<<<<<< HEAD
-=======
-  async componentDidMount() {
-    this.getMapData();
-    let userStorageData = await this.storage.fetchData(USER_DATA_KEY);
-    this.email = userStorageData.email;
-
-    this.props.navigation.addListener("focus", () => {
-      this.getMapData();
-    });
-
-    AppState.addEventListener("change", this._handleAppStateChange);
-  }
-
->>>>>>> f8360a79b3d92b14a6e8b5b1a3fa3f53ca4d08df
   _handleAppStateChange = (nextAppState) => {
     if (
       this.state.appState.match(/inactive|background/) &&
