@@ -45,43 +45,40 @@ class Home extends Component {
   }
 
   async componentDidMount() {
-    //TODO event for background reload and coming from navigation
-    this.getMapData();
     let userStorageData = await this.storage.fetchData(USER_DATA_KEY);
     this.email = userStorageData.email;
+    this._handleGettingBackOnline();
 
     this.props.navigation.addListener("focus", () => {
-      this.getMapData();
+      this._handleGettingBackOnline();
     });
 
     AppState.addEventListener("change", this._handleAppStateChange);
   }
 
-  componentWillUnmount() {
+  async componentWillUnmount() {
     if (this.props.navigation.event) {
       this.props.navigation.removeEventListener("focus", () => {
-        this.getMapData();
+        this._handleGettingBackOnline();
       });
     }
 
     AppState.removeEventListener("change", this._handleAppStateChange);
   }
 
+  _handleGettingBackOnline(){
+    this.getMapData();
+  }
+
   getMapData() {
-    const cancelToken = axios.CancelToken;
-    const source = cancelToken.source();
     const url = BASE_URL + BASE_RENT_STATION + GET_ALL_STATIONS;
 
     axios
-      .get(url, { cancelToken: source.token })
+      .get(url)
       .then((stations) => {
         this.setState({ mapData: stations.data });
       })
       .catch((err) => console.log(err));
-
-    return function cleanup() {
-      source.cancel("request canceled");
-    };
   }
 
   _handleAppStateChange = (nextAppState) => {
@@ -90,7 +87,7 @@ class Home extends Component {
       nextAppState === "active"
     ) {
       console.log("STATION:coming from background");
-      this.getMapData();
+      this._handleGettingBackOnline();
     }
 
     this.setState({ appState: nextAppState });
@@ -115,8 +112,8 @@ class Home extends Component {
     this.setState({ showPopup: false });
   };
 
-  //TODO always uses the same stationID!
   rentBike = (currentStationId) => {
+    console.log(currentStationId)
     this.closePopup();
 
     const url = BASE_URL + BASE_INVOICE + RENT_BIKE;
@@ -136,6 +133,7 @@ class Home extends Component {
           .then((r) => console.log("successfully stored invoice"));
         this.getMapData();
         this.message.showSuccessMessage();
+        setTimeout(() => {this.props.navigation.navigate("MyBike");}, 2000);
         console.log(response.data);
       })
       .catch((err) => this.message.showFailMessage(err));
@@ -143,7 +141,6 @@ class Home extends Component {
 
   renderCarouselItem({ item }) {
     let isDisabled = item.availableBikes === 0;
-    console.log("render carousel", item.id);
     return (
       <View style={styles.cardContainer}>
         <Text style={styles.title}>{item.address.streetName}</Text>
@@ -220,7 +217,7 @@ class Home extends Component {
         <Popup
           visible={this.state.showPopup}
           onCancelPopup={this.closePopup}
-          onConfirmPopup={() => this.rentBike(id)}
+          onConfirmPopup={() => this.rentBike(this.state.stationId)}
         />
       </View>
     );
