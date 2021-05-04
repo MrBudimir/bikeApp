@@ -77,7 +77,7 @@ class MyBike extends Component {
 
     async _handleGettingBackOnline() {
         this.invoiceFromStorage = await this.storage.fetchData(CURRENT_INVOICE_KEY);
-        if (this.invoiceFromStorage.requestNeeded) {
+        if (this.invoiceFromStorage && this.invoiceFromStorage.requestNeeded) {
             this.endRent()
         } else {
             this.getCurrentInvoice(this.email);
