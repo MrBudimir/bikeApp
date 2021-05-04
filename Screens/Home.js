@@ -144,12 +144,9 @@ class Home extends Component {
   renderCarouselItem({ item }) {
     let isDisabled = item.availableBikes === 0;
     console.log("render carousel", item.id);
-    let id = item.id;
     return (
       <View style={styles.cardContainer}>
-        <Text style={styles.title}>
-          {item.address.streetName} {item.id}
-        </Text>
+        <Text style={styles.title}>{item.address.streetName}</Text>
         <View style={{ justifyContent: "center" }}>
           <Text style={styles.infoText}>{item.availableBikes} available</Text>
         </View>
