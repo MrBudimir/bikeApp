@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   infoHeader: {
     marginTop: 15,
     color: "#F2AA4CFF",
-    fontSize: 16,
+    fontSize: 18,
   },
   infoContent: {
     marginVertical: 25,

@@ -21,6 +21,7 @@ import DeviceStorage from "../storage/DeviceStorage";
 import Message from "../components/Message";
 import TextButton from "../components/TextButton";
 import InfoField from "../components/InfoField";
+import InvoiceHistory from "../components/InvoiceHisotry";
 
 class MyProfile extends Component {
   userFromStorage = null;
@@ -38,6 +39,7 @@ class MyProfile extends Component {
     appState: AppState.currentState,
     editView: false,
     showPopup: false,
+    showInvoiceHistory: false,
   };
   storage = new DeviceStorage();
   message = new Message();
@@ -195,25 +197,6 @@ class MyProfile extends Component {
     this.setState({ showPopup: false });
   };
 
-  formatDate(dateString) {
-    if (dateString) {
-      let dateObject = Date.parse(dateString);
-      this.options = {
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-        day: "numeric",
-        month: "numeric",
-        year: "numeric",
-        timeZone: "UTC",
-        timeZoneName: "short",
-      };
-      return new Intl.DateTimeFormat("de-DE", this.options).format(dateObject);
-    } else {
-      return "rent is ended";
-    }
-  }
-
   render() {
     if (!this.state.editView) {
       return (
@@ -240,7 +223,7 @@ class MyProfile extends Component {
               <Text style={styles.formHeader}>History Invoices</Text>
               <TextButton
                 text="Show"
-                onPress={() => console.log("Show History")}
+                onPress={() => this.setState({ showInvoiceHistory: true })}
               />
             </View>
           </View>
@@ -251,6 +234,11 @@ class MyProfile extends Component {
               <Text style={styles.buttonText}>Logout</Text>
             </TouchableOpacity>
           </View>
+          <InvoiceHistory
+            data={this.state.user.invoices}
+            visible={this.state.showInvoiceHistory}
+            onExitPress={() => this.setState({ showInvoiceHistory: false })}
+          />
         </View>
       );
     } else {
@@ -337,7 +325,7 @@ const styles = StyleSheet.create({
   },
   formHeader: {
     color: "#F2AA4CFF",
-    fontSize: 16,
+    fontSize: 18,
   },
   logoutView: {
     flexDirection: "row",

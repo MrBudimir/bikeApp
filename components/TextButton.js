@@ -15,7 +15,7 @@ class TextButton extends Component {
 }
 
 const styles = StyleSheet.create({
-  buttonText: { color: "#6597CA", fontSize: 16 },
+  buttonText: { color: "#6597CA", fontSize: 18 },
 });
 
 export default TextButton;
