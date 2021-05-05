@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
-  FlatList,
 } from "react-native";
 import React, { Component } from "react";
 import axios from "axios";
@@ -20,6 +19,8 @@ import {
 } from "../constants";
 import DeviceStorage from "../storage/DeviceStorage";
 import Message from "../components/Message";
+import TextButton from "../components/TextButton";
+import InfoField from "../components/InfoField";
 
 class MyProfile extends Component {
   userFromStorage = null;
@@ -216,63 +217,41 @@ class MyProfile extends Component {
   render() {
     if (!this.state.editView) {
       return (
-        <ScrollView style={styles.screen}>
+        <View style={styles.screen}>
+          <TextButton
+            onPress={() => this.setState({ editView: true })}
+            text="Edit Profile"
+            style={styles.editButton}
+          />
           <View>
-            <View style={styles.infoView}>
-              <Text style={styles.formHeader}>First Name</Text>
-              <Text style={styles.formContent}>
-                {this.state.user ? this.state.user.firstName : ""}
-              </Text>
-            </View>
-            <View style={styles.infoView}>
-              <Text style={styles.formHeader}>Last Name</Text>
-              <Text style={styles.formContent}>
-                {this.state.user ? this.state.user.lastName : ""}
-              </Text>
-            </View>
-            <View style={styles.infoView}>
-              <Text style={styles.formHeader}>Email</Text>
-              <Text style={styles.formContent}>
-                {this.state.user ? this.state.user.email : ""}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.editViewButton}>
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() =>
-                this.setState({
-                  editView: true,
-                })
-              }
-            >
-              <Text style={styles.buttonText}>Edit Profile</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.invoiceHistory}>
-            <Text style={styles.formHeader}>Invoice History</Text>
-            <View style={styles.listItemContainer}>
-              <FlatList
-                data={this.state.user.invoices}
-                renderItem={({ item }) => (
-                  <Text style={styles.listItem}>
-                    {this.formatDate(item.startDate)}until{" "}
-                    {this.formatDate(item.endDate)}- {item.ebike.model}
-                  </Text>
-                )}
-                keyExtractor={(item) => item.id.toString()}
+            <InfoField
+              header="First Name"
+              text={this.state.user ? this.state.user.firstName : ""}
+            />
+            <InfoField
+              header="Last Name"
+              text={this.state.user ? this.state.user.lastName : ""}
+            />
+            <InfoField
+              header="E-Mail"
+              text={this.state.user ? this.state.user.email : ""}
+            />
+            <View style={styles.invoiceView}>
+              <Text style={styles.formHeader}>History Invoices</Text>
+              <TextButton
+                text="Show"
+                onPress={() => console.log("Show History")}
               />
             </View>
           </View>
           <View style={styles.logoutView}>
             <TouchableOpacity
-              style={styles.logoutButton}
               onPress={() => this.props.navigation.navigate("login")}
             >
               <Text style={styles.buttonText}>Logout</Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
+        </View>
       );
     } else {
       return (
@@ -357,41 +336,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#101820FF",
   },
   formHeader: {
-    marginTop: 25,
     color: "#F2AA4CFF",
     fontSize: 16,
   },
-  formContent: {
-    marginVertical: 25,
-    borderRadius: 3,
-    color: "white",
-    fontSize: 20,
-  },
-  infoView: {
-    borderBottomWidth: 1,
-    borderColor: "#F2AA4CFF",
-    borderRadius: 2,
-    marginHorizontal: "5%",
-  },
   logoutView: {
-    marginTop: 25,
-    alignItems: "center",
-    justifyContent: "flex-end",
     flexDirection: "row",
-  },
-  logoutButton: {
     alignSelf: "center",
-    borderColor: "#000000",
-    backgroundColor: "#f10707",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: 55,
+    position: "absolute",
+    bottom: 0,
+    marginBottom: 35,
   },
   buttonText: {
-    color: "#FFFFFF",
+    color: "white",
     fontSize: 16,
-    fontWeight: "bold",
   },
   editViewButton: {
     width: "50%",
@@ -401,14 +358,9 @@ const styles = StyleSheet.create({
     marginRight: "5%",
   },
   editButton: {
-    borderRadius: 15,
-    height: 55,
-    alignSelf: "center",
-    backgroundColor: "#2947cb",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    marginRight: 5,
+    marginTop: 15,
+    alignSelf: "flex-end",
+    marginRight: "5%",
   },
   button50: {
     alignSelf: "center",
@@ -441,21 +393,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 15,
   },
-  listItem: {
-    fontSize: 16,
-    marginTop: 10,
-    height: "auto",
-    color: "white",
-    backgroundColor: "#25384A",
-  },
-  listItemContainer: {
-    height: "100%",
-  },
-  invoiceHistory: {
-    marginTop: 25,
+  invoiceView: {
+    flexDirection: "row",
     marginHorizontal: "5%",
-    height: 250,
-    marginBottom: 50,
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 15,
   },
 });
 
