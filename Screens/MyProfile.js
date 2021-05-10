@@ -228,11 +228,10 @@ class MyProfile extends Component {
             </View>
           </View>
           <View style={styles.logoutView}>
-            <TouchableOpacity
+            <TextButton
+              text="Logout"
               onPress={() => this.props.navigation.navigate("login")}
-            >
-              <Text style={styles.buttonText}>Logout</Text>
-            </TouchableOpacity>
+            />
           </View>
           <InvoiceHistory
             data={this.state.user.invoices}
@@ -333,10 +332,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     marginBottom: 35,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
   },
   editViewButton: {
     width: "50%",

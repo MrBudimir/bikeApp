@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 class TextButton extends Component {
   render() {
@@ -8,7 +9,10 @@ class TextButton extends Component {
         style={this.props.style}
         onPress={this.props.onPress.bind(this)}
       >
-        <Text style={styles.buttonText}>{this.props.text}</Text>
+        <Text style={styles.buttonText}>
+          <Ionicons name={this.props.icon} size={18}></Ionicons>
+          {this.props.text}
+        </Text>
       </TouchableOpacity>
     );
   }

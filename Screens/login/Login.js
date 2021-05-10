@@ -93,7 +93,9 @@ class Login extends Component {
         </View>
         <View style={styles.signupButton}>
           <Text style={{ color: "white", fontSize: 18 }}>New User? </Text>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate("signup")}
+          >
             <Text
               style={{ color: "#F2AA4CFF", fontWeight: "bold", fontSize: 18 }}
             >

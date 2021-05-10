@@ -47,7 +47,7 @@ class TabNavigator extends Component {
           },
           tabBarStyle: {
             backgroundColor: blackColor,
-            borderTopColor: "transparent",
+            borderTopColor: "black",
           },
           tabBarActiveBackgroundColor: "#25384A",
         })}

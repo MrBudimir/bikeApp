@@ -31,7 +31,7 @@ class InvoiceHistory extends Component {
           <View style={styles.popupCard}>
             <TextButton
               onPress={this.props.onExitPress.bind(this)}
-              text="Exit"
+              text="Close"
               style={styles.button}
             />
             <View style={{ marginLeft: 25 }}>
