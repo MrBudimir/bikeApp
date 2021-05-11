@@ -5,6 +5,7 @@ export const BASE_USER = "/users";
 export const USER_EDIT = "/profile/edit";
 export const GET_USER = "/profile";
 export const LOGIN = "/login";
+export const REGISTER = "/register";
 
 // INVOICE
 export const BASE_INVOICE = "/invoices";
@@ -21,4 +22,3 @@ export const GET_ALL_STATIONS = "/allStations";
 export const USER_DATA_KEY = "userData";
 export const CURRENT_INVOICE_KEY = "currentRent";
 export const RENT_STATIONS_KEY = "rentStations";
-

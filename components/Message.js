@@ -15,7 +15,7 @@ class Message {
       message: "Successful",
       type: "success",
       icon: "success",
-      description: "You rent a bike successfully!",
+      description: "You rented a bike successfully!",
       duration: 2000,
     });
   };
@@ -39,7 +39,7 @@ class Message {
       description: "You saved your account successfully!",
       duration: 2000,
     });
-  };
+  }
 
   successMessage(message, description) {
     showMessage({
@@ -58,6 +58,17 @@ class Message {
       icon: "danger",
       description: description,
       duration: 3500,
+    });
+  }
+
+  failSignupMessage(message, description) {
+    showMessage({
+      message: message,
+      type: "danger",
+      icon: "danger",
+      description: description,
+      autoHide: false,
+      position: "bottom",
     });
   }
 }
