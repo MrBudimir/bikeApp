@@ -9,10 +9,10 @@ import axios from "axios";
 
 class Registration extends ValidationComponent {
   state = {
-    enteredFirstName: "Jogi",
-    enteredLastName: "Funke",
-    enteredEmail: "funke.jogi@gmail.com",
-    enteredPassword: "test1234",
+    enteredFirstName: "",
+    enteredLastName: "",
+    enteredEmail: "",
+    enteredPassword: "",
     isEmailInError: false,
     isPasswordInError: false,
     isFirstNameInError: false,
