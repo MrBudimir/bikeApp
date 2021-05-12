@@ -22,6 +22,7 @@ import Message from "../components/Message";
 import TextButton from "../components/TextButton";
 import InfoField from "../components/InfoField";
 import InvoiceHistory from "../components/InvoiceHisotry";
+import RoundButton from "../components/RoundButton";
 
 class MyProfile extends Component {
   userFromStorage = null;
@@ -242,7 +243,14 @@ class MyProfile extends Component {
       );
     } else {
       return (
-        <View styles={styles.screen}>
+        <View style={styles.screen}>
+          <View style={styles.backButton}>
+            <TextButton
+                text="Cancel"
+                onPress={() => this.setState({editView: false})}
+                icon="close-outline"
+            />
+          </View>
           <ConfirmSavePopup
             visible={this.state.showPopup}
             onCancelPopup={this.closePopup}
@@ -252,65 +260,59 @@ class MyProfile extends Component {
           <ScrollView style={styles.editView}>
             <Text style={styles.formHeader}>First Name</Text>
             <TextInput
-              style={styles.input}
-              onChangeText={(newFirstName) =>
-                this.setState({
-                  newFirstName: newFirstName,
-                })
-              }
-            >
-              {this.state.user ? this.state.user.firstName : ""}
-            </TextInput>
+                ref="First Name"
+                style={styles.textInput}
+                placeholderTextColor="white"
+                placeholder="First Name"
+                textContentType="givenName"
+                onChangeText={(newFirstName) =>
+                    this.setState({  newFirstName: newFirstName,})
+                }
+                value={this.state.user.firstName}
+            />
+
             <Text style={styles.formHeader}>Last Name</Text>
             <TextInput
-              style={styles.input}
-              onChangeText={(newLastName) =>
-                this.setState({
-                  newLastName: newLastName,
-                })
-              }
-            >
-              {this.state.user ? this.state.user.lastName : ""}
-            </TextInput>
+                ref="Last Name"
+                style={styles.textInput}
+                placeholderTextColor="white"
+                placeholder="Last Name"
+                textContentType="givenName"
+                onChangeText={(newLastName) =>
+                    this.setState({ newLastName: newLastName,})
+                }
+                value={this.state.user.lastName}
+            />
+
             <Text style={styles.formHeader}>Email</Text>
             <TextInput
-              style={styles.input}
-              editable={false}
-              onChangeText={(newEmail) =>
-                this.setState({
-                  newEmail: newEmail,
-                })
-              }
-            >
-              {this.state.user ? this.state.user.email : ""}
-            </TextInput>
+                ref="E-Mail"
+                style={styles.textInput}
+                placeholderTextColor="white"
+                placeholder="E-Mail"
+                textContentType="emailAddress"
+                onChangeText={(newEmail) =>
+                    this.setState({newEmail: newEmail,})
+                }
+                value={this.state.user.email}
+            />
+
             <Text style={styles.formHeader}>Password</Text>
             <TextInput
-              secureTextEntry={true}
-              style={styles.input}
-              onChangeText={(newPassword) =>
-                this.setState({
-                  newPassword: newPassword,
-                })
-              }
-            >
-              {this.state.user ? this.state.user.password : ""}
-            </TextInput>
+                ref="password"
+                secureTextEntry={true}
+                style={styles.textInput}
+                placeholderTextColor="white"
+                placeholder="Password"
+                textContentType="newPassword"
+                onChangeText={(newPassword) =>
+                    this.setState({newPassword: newPassword,})
+                }
+                value={this.state.user.password}
+            />
+
           </ScrollView>
-          <View style={styles.saveView}>
-            <TouchableOpacity
-              style={[styles.saveButton, styles.button50]}
-              onPress={() => this.setState({ showPopup: true })}
-            >
-              <Text style={styles.buttonText}>Save</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.cancelButton, styles.button50]}
-              onPress={() => this.setState({ editView: false })}
-            >
-              <Text style={styles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
+          <RoundButton text="Save" onPress={() => this.setState({showPopup: true})}/>
         </View>
       );
     }
@@ -320,11 +322,13 @@ class MyProfile extends Component {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    height: "100%",
     backgroundColor: "#101820FF",
   },
   formHeader: {
     color: "#F2AA4CFF",
     fontSize: 18,
+    paddingLeft: 10
   },
   logoutView: {
     flexDirection: "row",
@@ -353,8 +357,10 @@ const styles = StyleSheet.create({
     height: 55,
   },
   editView: {
-    height: "80%",
     overflow: "scroll",
+    paddingLeft: 10,
+    paddingRight: 10,
+    backgroundColor: "#101820FF",
   },
   saveButton: {
     backgroundColor: "#2947cb",
@@ -382,6 +388,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 15,
+  },
+  textInput: {
+    backgroundColor: "#25384A",
+    height: 60,
+    borderRadius: 15,
+    color: "white",
+    paddingLeft: 8,
+    paddingRight: 8,
+    fontSize: 18,
+    marginVertical: 10,
+  },
+  backButton: {
+    position: "relative",
+    marginTop: 15,
+    alignSelf: "flex-end",
+    marginRight: "5%",
   },
 });
 

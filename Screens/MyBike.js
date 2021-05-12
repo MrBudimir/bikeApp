@@ -262,13 +262,13 @@ class MyBike extends Component {
                 <View style={styles.invoiceMetaDataView}>
                     <InfoField
                         header="Model"
-                        text={(this.state.currentInvoice.ebike) ? (this.state.currentInvoice.ebike.model) : "-"}/>
+                        text={(this.state.currentInvoice.ebike) ? (this.state.currentInvoice.ebike.model) : ""}/>
                     <InfoField
                         header="Rentstation Id"
-                        text={(this.state.currentInvoice.ebike) ? (this.state.currentInvoice.ebike.rentStation.id) : "-"}/>
+                        text={(this.state.currentInvoice.ebike) ? (this.state.currentInvoice.ebike.rentStation.id) : ""}/>
                     <InfoField
                         header="Start Date"
-                        text={(this.state.currentInvoice) ? (this.state.currentInvoice.startDate) : "-"}/>
+                        text={(this.state.currentInvoice) ? (this.state.currentInvoice.startDate) : ""}/>
                 </View>
                 <View style={styles.rentTimeContainer}>
                     {timerOrNot}
