@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { View, StyleSheet, TextInput, Text } from "react-native";
 import TextButton from "../../components/TextButton";
 import ValidationComponent from "react-native-form-validator";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import RoundButton from "../../components/RoundButton";
 import Message from "../../components/Message";
 import { BASE_URL, BASE_USER, REGISTER } from "../../constants";
 import axios from "axios";
@@ -97,7 +97,7 @@ class Registration extends ValidationComponent {
   render() {
     return (
       <View style={styles.screen}>
-        <View style={styles.button}>
+        <View style={styles.backButton}>
           <TextButton
             text="Back"
             onPress={() => this.props.navigation.navigate("login")}
@@ -162,16 +162,7 @@ class Registration extends ValidationComponent {
             }
             value={this.state.enteredPassword}
           />
-          <TouchableOpacity
-            style={styles.signupButton}
-            onPress={() => this.signup()}
-          >
-            <Text
-              style={{ color: "#101820FF", fontWeight: "bold", fontSize: 18 }}
-            >
-              SIGN UP
-            </Text>
-          </TouchableOpacity>
+          <RoundButton text="SIGN UP" onPress={() => this.signup()} />
         </View>
       </View>
     );
@@ -200,7 +191,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginVertical: 10,
   },
-  button: {
+  backButton: {
     marginTop: 30,
     position: "absolute",
     marginLeft: 25,
@@ -219,14 +210,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginVertical: 10,
     minWidth: 152,
-  },
-  signupButton: {
-    backgroundColor: "#F2AA4CFF",
-    borderRadius: 25,
-    height: 60,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 25,
   },
 });
 

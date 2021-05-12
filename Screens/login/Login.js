@@ -10,6 +10,7 @@ import Message from "../../components/Message";
 import axios from "axios";
 import { BASE_URL, BASE_USER, LOGIN, USER_DATA_KEY } from "../../constants";
 import DeviceStorage from "../../storage/DeviceStorage";
+import RoundButton from "../../components/RoundButton";
 
 class Login extends Component {
   state = {
@@ -21,11 +22,11 @@ class Login extends Component {
 
   async componentDidMount() {
     let user = await this.storage.fetchData(USER_DATA_KEY);
-    if(user){
+    if (user) {
       this.setState({
         enteredEmail: user.email,
-        enteredPassword: user.password
-      })
+        enteredPassword: user.password,
+      });
       this.login();
     }
   }
@@ -86,21 +87,11 @@ class Login extends Component {
             ref={(input) => (this.secondInput = input)}
             secureTextEntry={true}
           />
-          <TouchableOpacity
-            style={
-              !this.state.enteredEmail || !this.state.enteredPassword
-                ? styles.loginButtonDisabled
-                : styles.loginButton
-            }
+          <RoundButton
+            text="LOGIN"
             onPress={() => this.login()}
-            disabled={!this.state.enteredEmail && !this.state.enteredPassword}
-          >
-            <Text
-              style={{ color: "#101820FF", fontWeight: "bold", fontSize: 18 }}
-            >
-              LOGIN
-            </Text>
-          </TouchableOpacity>
+            disabled={!this.state.enteredEmail || !this.state.enteredPassword}
+          />
         </View>
         <View style={styles.signupButton}>
           <Text style={{ color: "white", fontSize: 18 }}>New User? </Text>
@@ -140,23 +131,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "white",
     fontSize: 18,
-  },
-  loginButton: {
-    backgroundColor: "#F2AA4CFF",
-    borderRadius: 25,
-    height: 60,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 25,
-  },
-  loginButtonDisabled: {
-    opacity: 0.7,
-    backgroundColor: "#EBEBE4",
-    borderRadius: 25,
-    height: 60,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 25,
   },
   signupButton: {
     position: "absolute",
