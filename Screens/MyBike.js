@@ -20,6 +20,8 @@ import {
 } from "../constants";
 import DeviceStorage from "../storage/DeviceStorage";
 import Message from "../components/Message";
+import InfoField from "../components/InfoField";
+import TextButton from "../components/TextButton";
 
 class MyBike extends Component {
 
@@ -229,62 +231,53 @@ class MyBike extends Component {
     render() {
         const {days, hours, minutes, seconds} = this.state.timerProperties
 
-        let timerOrRefresh;
+        let timerOrNot;
         let costs;
+        let endButtonOrRefresh;
         if (this.state.startDate) {
 
-            timerOrRefresh = <View style={styles.timer}><Text
+            timerOrNot = <View style={styles.timer}><Text
                 style={styles.timerText}>{`${days} d: ${hours} h: ${minutes} m: ${seconds} s`}</Text></View>;
             costs = <View style={styles.costsContainer} >
-                <Text>
+                <Text style={styles.costsText}>
                     Your costs so far:
                 </Text>
                 <Text style={styles.costs}>
                     {this.formatEuro((this.duration / 60) * COSTS_PER_MIN)}
                 </Text>
             </View>
+            endButtonOrRefresh = <TouchableOpacity disabled={!this.state.startDate}
+                                                   style={this.state.startDate ? styles.endRentButton : styles.disabledButton}
+                                                   onPress={() => this.endRent()}>
+                <Text style={styles.buttonText}>End rent</Text>
+            </TouchableOpacity>
         } else {
-            timerOrRefresh =
-                <TouchableOpacity style={styles.refresh} onPress={() => this.getCurrentInvoice(this.email)}>
-                    <Text style={styles.buttonText}>Refresh...</Text>
-                </TouchableOpacity>;
-
+            endButtonOrRefresh =
+                <TextButton
+                    text="Refresh..."
+                    onPress={() => this.getCurrentInvoice(this.email)}/>
         }
         return (
-            <View>
-                <View style={styles.screen}>
-                    <Text style={styles.formHeader}>
-                        Model
-                    </Text>
-                    <Text style={styles.formContent}>
-                        {(this.state.currentInvoice.ebike) ? (this.state.currentInvoice.ebike.model) : ""}
-                    </Text>
-                    <Text style={styles.formHeader}>
-                        Rentstation Id
-                    </Text>
-                    <Text style={styles.formContent}>
-                        {(this.state.currentInvoice.ebike) ? (this.state.currentInvoice.ebike.rentStation.id) : ""}
-                    </Text>
-                    <Text style={styles.formHeader}>
-                        Start Date
-                    </Text>
-                    <Text style={styles.formContent}>
-                        {(this.state.currentInvoice) ? (this.state.currentInvoice.startDate) : ""}
-                    </Text>
+            <View style={styles.screen}>
+                <View style={styles.invoiceMetaDataView}>
+                    <InfoField
+                        header="Model"
+                        text={(this.state.currentInvoice.ebike) ? (this.state.currentInvoice.ebike.model) : "-"}/>
+                    <InfoField
+                        header="Rentstation Id"
+                        text={(this.state.currentInvoice.ebike) ? (this.state.currentInvoice.ebike.rentStation.id) : "-"}/>
+                    <InfoField
+                        header="Start Date"
+                        text={(this.state.currentInvoice) ? (this.state.currentInvoice.startDate) : "-"}/>
                 </View>
                 <View style={styles.rentTimeContainer}>
-                    {timerOrRefresh}
+                    {timerOrNot}
                     {costs}
                 </View>
                 <View>
-
                 </View>
                 <View style={styles.endRent}>
-                    <TouchableOpacity disabled={!this.state.startDate}
-                                      style={this.state.startDate ? styles.endRentButton : styles.disabledButton}
-                                      onPress={() => this.endRent()}>
-                        <Text style={styles.buttonText}>End rent</Text>
-                    </TouchableOpacity>
+                    {endButtonOrRefresh}
                 </View>
             </View>
         )
@@ -294,20 +287,10 @@ class MyBike extends Component {
 
 const styles = StyleSheet.create({
     screen: {
-        height: '50%'
+        flex: 1,
+        backgroundColor: "#101820FF",
     },
-    formHeader: {
-        borderBottomWidth: 2,
-        borderStyle: "solid",
-        padding: 10,
-        paddingLeft: 3,
-        borderRadius: 3,
-        fontWeight: "bold"
-    },
-    formContent: {
-        padding: 10,
-        paddingLeft: 3,
-        borderRadius: 3
+    invoiceMetaDataView:{
     },
     rentTimeContainer: {
         height: '30%',
@@ -315,6 +298,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end'
     },
     timer: {
+        marginTop: 10,
         height: "50%",
         backgroundColor: "#000000",
         width: '90%',
@@ -328,51 +312,31 @@ const styles = StyleSheet.create({
         fontSize: 24
     },
     endRent: {
-        height: '20%',
         alignItems: 'center',
         justifyContent: 'flex-end'
     },
     endRentButton: {
         alignSelf: "center",
-        height: 55,
-        borderColor: "#000000",
-        backgroundColor: '#2947cb',
         alignItems: "center",
         justifyContent: "center",
         width: "100%"
     },
     buttonText: {
-        color: "#FFFFFF",
-        fontSize: 16,
+        color: "#6597CA",
+        fontSize: 18,
         fontWeight: "bold",
-    },
-    refresh: {
-        alignSelf: "center",
-        height: 55,
-        borderColor: "#000000",
-        backgroundColor: '#2947cb',
-        alignItems: "center",
-        justifyContent: "center",
-        width: "30%",
-        borderRadius: 15
-    },
-    disabledButton: {
-        alignSelf: "center",
-        height: 55,
-        backgroundColor: '#cccccc',
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
-        color: '#666666',
-        borderColor: "#000000",
     },
     costs: {
         fontWeight: "bold",
-        marginLeft: 5
+        marginLeft: 5,
+        color: "#F2AA4CFF",
     },
     costsContainer: {
         flex: 1,
-        flexDirection: "row"
+        flexDirection: "row",
+    },
+    costsText: {
+        color: "#F2AA4CFF",
     }
 
 });

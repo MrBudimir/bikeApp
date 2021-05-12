@@ -13,11 +13,22 @@ import DeviceStorage from "../../storage/DeviceStorage";
 
 class Login extends Component {
   state = {
-    enteredEmail: "PetraMeier@gmail.com",
-    enteredPassword: "1234",
+    enteredEmail: "",
+    enteredPassword: "",
   };
   storage = new DeviceStorage();
   message = new Message();
+
+  async componentDidMount() {
+    let user = await this.storage.fetchData(USER_DATA_KEY);
+    if(user){
+      this.setState({
+        enteredEmail: user.email,
+        enteredPassword: user.password
+      })
+      this.login();
+    }
+  }
 
   login = () => {
     const url = BASE_URL + BASE_USER + LOGIN;

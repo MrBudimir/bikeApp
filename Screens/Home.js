@@ -164,10 +164,10 @@ class Home extends Component {
           } else {
             this.message.failMessage("Bike rent failed", "You already rented a bike")
           }
+          setTimeout(() => {this.props.navigation.navigate("MyBike");}, 1000);
         }
 
         this.getMapData();
-        setTimeout(() => {this.props.navigation.navigate("MyBike");}, 1000);
 
       })
       .catch((err) => {
