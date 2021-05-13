@@ -267,7 +267,7 @@ class MyBike extends Component {
         <View style={styles.costsContainer}>
           <Text style={styles.costsText}>Your costs so far:</Text>
           <Text style={styles.costs}>
-            {this.formatEuro((this.duration / 60) * COSTS_PER_MIN) + BASE_PRICE}
+            {this.formatEuro((this.duration / 60) * COSTS_PER_MIN)}
           </Text>
         </View>
       );

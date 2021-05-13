@@ -133,10 +133,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   signupButton: {
-    position: "absolute",
-    bottom: 0,
+    flex: 1,
+    justifyContent: "center",
     flexDirection: "row",
-    marginBottom: 35,
+    marginTop: 15,
   },
   buttonText: {
     fontWeight: "bold",

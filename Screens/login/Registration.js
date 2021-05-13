@@ -58,6 +58,7 @@ class Registration extends ValidationComponent {
               "Signed Up",
               "You have successfuly registrate!"
             );
+            this.props.navigation.navigate("login");
           } else {
             this.message.failMessage(
               "E-Mail Exists",
@@ -160,6 +161,7 @@ class Registration extends ValidationComponent {
             onChangeText={(password) =>
               this.setState({ enteredPassword: password })
             }
+            secureTextEntry={true}
             value={this.state.enteredPassword}
           />
           <RoundButton text="SIGN UP" onPress={() => this.signup()} />
