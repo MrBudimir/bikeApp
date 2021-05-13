@@ -252,10 +252,10 @@ class MyProfile extends Component {
             />
           </View>
           <ConfirmSavePopup
-            visible={this.state.showPopup}
-            onCancelPopup={this.closePopup}
-            password={this.state.user.password}
-            onConfirmPopup={() => this.handleSave(null)}
+              visible={this.state.showPopup}
+              onCancelPopup={this.closePopup}
+              password={this.state.user.password}
+              onConfirmPopup={() => this.handleSave(null)}
           />
           <ScrollView style={styles.editView}>
             <Text style={styles.formHeader}>First Name</Text>
@@ -268,8 +268,10 @@ class MyProfile extends Component {
                 onChangeText={(newFirstName) =>
                     this.setState({  newFirstName: newFirstName,})
                 }
-                value={this.state.user.firstName}
-            />
+            >
+              {this.state.user ? this.state.user.firstName : ""}
+            </TextInput>
+
 
             <Text style={styles.formHeader}>Last Name</Text>
             <TextInput
@@ -280,22 +282,25 @@ class MyProfile extends Component {
                 textContentType="givenName"
                 onChangeText={(newLastName) =>
                     this.setState({ newLastName: newLastName,})
-                }
-                value={this.state.user.lastName}
-            />
+                }>
+              {this.state.user ? this.state.user.lastName : ""}
+            </TextInput>
+
 
             <Text style={styles.formHeader}>Email</Text>
             <TextInput
                 ref="E-Mail"
-                style={styles.textInput}
+                editable={false}
+                style={styles.textInputDisabled}
                 placeholderTextColor="white"
                 placeholder="E-Mail"
                 textContentType="emailAddress"
                 onChangeText={(newEmail) =>
                     this.setState({newEmail: newEmail,})
                 }
-                value={this.state.user.email}
-            />
+            >
+              {this.state.user ? this.state.user.email : ""}
+            </TextInput>
 
             <Text style={styles.formHeader}>Password</Text>
             <TextInput
@@ -308,8 +313,9 @@ class MyProfile extends Component {
                 onChangeText={(newPassword) =>
                     this.setState({newPassword: newPassword,})
                 }
-                value={this.state.user.password}
-            />
+            >
+              {this.state.user ? this.state.user.password : ""}
+            </TextInput>
 
           </ScrollView>
           <RoundButton text="Save" onPress={() => this.setState({showPopup: true})}/>
@@ -328,7 +334,6 @@ const styles = StyleSheet.create({
   formHeader: {
     color: "#F2AA4CFF",
     fontSize: 18,
-    paddingLeft: 10
   },
   logoutView: {
     flexDirection: "row",
@@ -391,6 +396,17 @@ const styles = StyleSheet.create({
   },
   textInput: {
     backgroundColor: "#25384A",
+    height: 60,
+    borderRadius: 15,
+    color: "white",
+    paddingLeft: 8,
+    paddingRight: 8,
+    fontSize: 18,
+    marginVertical: 10,
+  },
+  textInputDisabled: {
+    backgroundColor: "#25384A",
+    opacity: 0.5,
     height: 60,
     borderRadius: 15,
     color: "white",
