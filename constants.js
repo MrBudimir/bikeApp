@@ -12,7 +12,8 @@ export const BASE_INVOICE = "/invoices";
 export const RENT_BIKE = "/rentBike";
 export const END_RENT = "/endRent";
 export const GET_CURRENT_INVOICE = "/currentInvoice";
-export const COSTS_PER_MIN = 1;
+export const COSTS_PER_MIN = 0.05;
+export const BASE_PRICE = 2;
 
 // RENTSTATION
 export const BASE_RENT_STATION = "/RentStation";
