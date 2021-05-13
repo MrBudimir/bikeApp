@@ -16,7 +16,7 @@ export const COSTS_PER_MIN = 0.05;
 export const BASE_PRICE = 2;
 
 // RENTSTATION
-export const BASE_RENT_STATION = "/RentStation";
+export const BASE_RENT_STATION = "/rentStation";
 export const GET_ALL_STATIONS = "/allStations";
 
 // STORAGE KEYS
