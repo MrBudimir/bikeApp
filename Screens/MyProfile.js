@@ -3,7 +3,6 @@ import {
   Text,
   StyleSheet,
   AppState,
-  TouchableOpacity,
   TextInput,
   ScrollView,
 } from "react-native";
@@ -246,79 +245,80 @@ class MyProfile extends Component {
         <View style={styles.screen}>
           <View style={styles.backButton}>
             <TextButton
-                text="Cancel"
-                onPress={() => this.setState({editView: false})}
-                icon="close-outline"
+              text="Cancel"
+              onPress={() => this.setState({ editView: false })}
+              icon="close-outline"
             />
           </View>
           <ConfirmSavePopup
-              visible={this.state.showPopup}
-              onCancelPopup={this.closePopup}
-              password={this.state.user.password}
-              onConfirmPopup={() => this.handleSave(null)}
+            visible={this.state.showPopup}
+            onCancelPopup={this.closePopup}
+            password={this.state.user.password}
+            onConfirmPopup={() => this.handleSave(null)}
           />
           <ScrollView style={styles.editView}>
             <Text style={styles.formHeader}>First Name</Text>
             <TextInput
-                ref="First Name"
-                style={styles.textInput}
-                placeholderTextColor="white"
-                placeholder="First Name"
-                textContentType="givenName"
-                onChangeText={(newFirstName) =>
-                    this.setState({  newFirstName: newFirstName,})
-                }
+              ref="First Name"
+              style={styles.textInput}
+              placeholderTextColor="white"
+              placeholder="First Name"
+              textContentType="givenName"
+              onChangeText={(newFirstName) =>
+                this.setState({ newFirstName: newFirstName })
+              }
             >
               {this.state.user ? this.state.user.firstName : ""}
             </TextInput>
 
-
             <Text style={styles.formHeader}>Last Name</Text>
             <TextInput
-                ref="Last Name"
-                style={styles.textInput}
-                placeholderTextColor="white"
-                placeholder="Last Name"
-                textContentType="givenName"
-                onChangeText={(newLastName) =>
-                    this.setState({ newLastName: newLastName,})
-                }>
+              ref="Last Name"
+              style={styles.textInput}
+              placeholderTextColor="white"
+              placeholder="Last Name"
+              textContentType="givenName"
+              onChangeText={(newLastName) =>
+                this.setState({ newLastName: newLastName })
+              }
+            >
               {this.state.user ? this.state.user.lastName : ""}
             </TextInput>
 
-
-            <Text style={styles.formHeader}>Email</Text>
+            <Text style={styles.formHeader}>E-Mail</Text>
             <TextInput
-                ref="E-Mail"
-                editable={false}
-                style={styles.textInputDisabled}
-                placeholderTextColor="white"
-                placeholder="E-Mail"
-                textContentType="emailAddress"
-                onChangeText={(newEmail) =>
-                    this.setState({newEmail: newEmail,})
-                }
+              ref="E-Mail"
+              editable={false}
+              style={styles.textInputDisabled}
+              placeholderTextColor="white"
+              placeholder="E-Mail"
+              textContentType="emailAddress"
+              onChangeText={(newEmail) => this.setState({ newEmail: newEmail })}
             >
               {this.state.user ? this.state.user.email : ""}
             </TextInput>
 
             <Text style={styles.formHeader}>Password</Text>
             <TextInput
-                ref="password"
-                secureTextEntry={true}
-                style={styles.textInput}
-                placeholderTextColor="white"
-                placeholder="Password"
-                textContentType="newPassword"
-                onChangeText={(newPassword) =>
-                    this.setState({newPassword: newPassword,})
-                }
+              ref="password"
+              secureTextEntry={true}
+              style={styles.textInput}
+              placeholderTextColor="white"
+              placeholder="Password"
+              textContentType="newPassword"
+              onChangeText={(newPassword) =>
+                this.setState({ newPassword: newPassword })
+              }
             >
               {this.state.user ? this.state.user.password : ""}
             </TextInput>
-
           </ScrollView>
-          <RoundButton text="Save" onPress={() => this.setState({showPopup: true})}/>
+          <View style={{ marginBottom: 15, marginHorizontal: "5%" }}>
+            <RoundButton
+              text="Save"
+              onPress={() => this.setState({ showPopup: true })}
+            />
+          </View>
         </View>
       );
     }
@@ -363,9 +363,8 @@ const styles = StyleSheet.create({
   },
   editView: {
     overflow: "scroll",
-    paddingLeft: 10,
-    paddingRight: 10,
     backgroundColor: "#101820FF",
+    marginHorizontal: "5%",
   },
   saveButton: {
     backgroundColor: "#2947cb",
@@ -379,14 +378,6 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     flexDirection: "row",
   },
-  input: {
-    margin: 15,
-    height: 40,
-    padding: 10,
-    borderColor: "#000000",
-    borderWidth: 1,
-    borderRadius: 15,
-  },
   invoiceView: {
     flexDirection: "row",
     marginHorizontal: "5%",
@@ -396,13 +387,14 @@ const styles = StyleSheet.create({
   },
   textInput: {
     backgroundColor: "#25384A",
-    height: 60,
+    height: 55,
     borderRadius: 15,
     color: "white",
+    fontSize: 18,
+    textAlign: "left",
+    marginVertical: 10,
     paddingLeft: 8,
     paddingRight: 8,
-    fontSize: 18,
-    marginVertical: 10,
   },
   textInputDisabled: {
     backgroundColor: "#25384A",
@@ -410,9 +402,9 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 15,
     color: "white",
+    fontSize: 18,
     paddingLeft: 8,
     paddingRight: 8,
-    fontSize: 18,
     marginVertical: 10,
   },
   backButton: {

@@ -17,7 +17,8 @@ import {
   BASE_URL,
   CURRENT_INVOICE_KEY,
   GET_ALL_STATIONS,
-  RENT_BIKE, RENT_STATIONS_KEY,
+  RENT_BIKE,
+  RENT_STATIONS_KEY,
   USER_DATA_KEY,
 } from "../constants";
 import DeviceStorage from "../storage/DeviceStorage";
@@ -47,7 +48,9 @@ class Home extends Component {
 
   async componentDidMount() {
     let userStorageData = await this.storage.fetchData(USER_DATA_KEY);
-    this.rentStationsFromStorage = await this.storage.fetchData(RENT_STATIONS_KEY)
+    this.rentStationsFromStorage = await this.storage.fetchData(
+      RENT_STATIONS_KEY
+    );
 
     this.email = userStorageData.email;
     this._handleGettingBackOnline();
@@ -71,8 +74,11 @@ class Home extends Component {
 
   _handleGettingBackOnline() {
     this.getMapData();
-    console.log("getting back", this.rentStationsFromStorage.wantedToRentId)
-    if (typeof (this.rentStationsFromStorage.wantedToRentId) !== 'undefined' && this.rentStationsFromStorage.wantedToRentId !== 0) {
+    console.log("getting back", this.rentStationsFromStorage.wantedToRentId);
+    if (
+      typeof this.rentStationsFromStorage.wantedToRentId !== "undefined" &&
+      this.rentStationsFromStorage.wantedToRentId !== 0
+    ) {
       this.rentBike(this.rentStationsFromStorage.wantedToRentId);
     }
   }
@@ -85,14 +91,17 @@ class Home extends Component {
       .then((stations) => {
         this.setState({ mapData: stations.data });
 
-        this.storage.storeData(RENT_STATIONS_KEY, stations.data)
-            .then(r => console.log("persisted successfully rent stations"))
+        this.storage
+          .storeData(RENT_STATIONS_KEY, stations.data)
+          .then((r) => console.log("persisted successfully rent stations"));
       })
       .catch((err) => {
         this.setState({
-          mapData: this.rentStationsFromStorage
-        })
-        console.log("Could not get rent stations from server, instead using from storage if existing")
+          mapData: this.rentStationsFromStorage,
+        });
+        console.log(
+          "Could not get rent stations from server, instead using from storage if existing"
+        );
       });
   }
 
@@ -142,43 +151,63 @@ class Home extends Component {
     axios
       .post(url, null, params)
       .then((response) => {
+        this.message.failMessage("Bike rent failed");
         this.storage
           .storeData(CURRENT_INVOICE_KEY, response.data)
           .then((r) => console.log("successfully stored invoice"));
 
-        if (typeof(this.rentStationsFromStorage.wantedToRentId) !== 'undefined' && this.rentStationsFromStorage.wantedToRentId !== 0){
-          console.log("rend bike", this.rentStationsFromStorage.wantedToRentId)
+        if (
+          typeof this.rentStationsFromStorage.wantedToRentId !== "undefined" &&
+          this.rentStationsFromStorage.wantedToRentId !== 0
+        ) {
+          console.log("rent bike", this.rentStationsFromStorage.wantedToRentId);
           this.rentStationsFromStorage.wantedToRentId = 0;
           this.storage
-              .storeData(RENT_STATIONS_KEY, this.rentStationsFromStorage)
-              .then((r) => console.log("setting offline request to false"))
+            .storeData(RENT_STATIONS_KEY, this.rentStationsFromStorage)
+            .then((r) => console.log("setting offline request to false"));
 
-          if(response.data){
-            this.message.successMessage("Successful", "Successfully processed old request!")
+          if (response.data) {
+            this.message.successMessage(
+              "Successful",
+              "Successfully processed old request!"
+            );
           } else {
-            this.message.failMessage("Bike rent failed", "Bike is already in use, could not rent bike (old request)")
+            this.message.failMessage(
+              "Bike rent failed",
+              "Bike is already in use, could not rent bike (old request)"
+            );
           }
-        }else {
-          if(response.data){
-            this.message.successMessage("Successful", "You rent a bike successfully!")
+        } else {
+          if (response.data) {
+            this.message.successMessage(
+              "Successful",
+              "You rent a bike successfully!"
+            );
           } else {
-            this.message.failMessage("Bike rent failed", "You already rented a bike")
+            this.message.failMessage(
+              "Bike rent failed",
+              "Bike cannot be rented"
+            );
           }
-          setTimeout(() => {this.props.navigation.navigate("MyBike");}, 1000);
+          setTimeout(() => {
+            this.props.navigation.navigate("MyBike");
+          }, 1000);
         }
 
         this.getMapData();
-
       })
       .catch((err) => {
-        this.message.failMessage("Bike not rented now"
-            , "We can not reach the server to rent your bike\n" +
-            "Instead we are going to persist your request for later")
+        console.log("Party");
+        this.message.failMessage(
+          "Bike not rented now",
+          "We can not reach the server to rent your bike\n" +
+            "Instead we are going to persist your request for later"
+        );
 
         this.rentStationsFromStorage.wantedToRentId = currentStationId;
         this.storage
-            .storeData(RENT_STATIONS_KEY, this.rentStationsFromStorage)
-            .then((r) => console.log("setting offline request to true"));
+          .storeData(RENT_STATIONS_KEY, this.rentStationsFromStorage)
+          .then((r) => console.log("setting offline request to true"));
       });
   };
 
@@ -312,13 +341,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   disabledButton: {
-    opacity: 0.7,
+    opacity: 0.5,
     alignSelf: "center",
     marginBottom: 15,
     width: "50%",
     height: 45,
     borderWidth: 3,
-    borderColor: "#EBEBE4",
+    borderColor: "#F2AA4CFF",
     borderRadius: 25,
     alignItems: "center",
     justifyContent: "center",
@@ -329,8 +358,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   disabledButtonText: {
-    opacity: 0.7,
-    color: "#EBEBE4",
+    opacity: 0.5,
+    color: "#F2AA4CFF",
     fontSize: 16,
     fontWeight: "bold",
   },

@@ -17,7 +17,6 @@ import {
   CURRENT_INVOICE_KEY,
   END_RENT,
   GET_CURRENT_INVOICE,
-  BASE_PRICE,
   USER_DATA_KEY,
 } from "../constants";
 import DeviceStorage from "../storage/DeviceStorage";
@@ -164,10 +163,12 @@ class MyBike extends Component {
           let dateObject = Date.parse(this.invoiceFromStorage.startDate);
           console.log(dateObject);
           this.invoiceFromStorage.startDate = this.formatDate(dateObject);
-          this.setState({
-            currentInvoice: this.invoiceFromStorage,
-            startDate: dateObject,
-          });
+          if (!this.invoiceFromStorage.requestNeeded) {
+            this.setState({
+              currentInvoice: this.invoiceFromStorage,
+              startDate: dateObject,
+            });
+          }
         }
       });
   }
@@ -284,10 +285,13 @@ class MyBike extends Component {
       );
     } else {
       endButtonOrRefresh = (
-        <TextButton
-          text="Refresh..."
-          onPress={() => this.getCurrentInvoice(this.email)}
-        />
+        <View style={styles.refreshButton}>
+          <Text style={styles.noBike}>No Bike Rented</Text>
+          <TextButton
+            text="Refresh..."
+            onPress={() => this.getCurrentInvoice(this.email)}
+          />
+        </View>
       );
     }
     return (
@@ -298,14 +302,6 @@ class MyBike extends Component {
             text={
               this.state.currentInvoice.ebike
                 ? this.state.currentInvoice.ebike.model
-                : "-"
-            }
-          />
-          <InfoField
-            header="Rentstation Id"
-            text={
-              this.state.currentInvoice.ebike
-                ? this.state.currentInvoice.ebike.rentStation.id
                 : "-"
             }
           />
@@ -321,9 +317,8 @@ class MyBike extends Component {
         <View style={styles.rentTimeContainer}>
           {timerOrNot}
           {costs}
+          <View style={styles.endRent}>{endButtonOrRefresh}</View>
         </View>
-        <View></View>
-        <View style={styles.endRent}>{endButtonOrRefresh}</View>
       </View>
     );
   }
@@ -336,9 +331,9 @@ const styles = StyleSheet.create({
   },
   invoiceMetaDataView: {},
   rentTimeContainer: {
-    height: "30%",
+    flex: 1,
     alignItems: "center",
-    justifyContent: "flex-end",
+    justifyContent: "center",
   },
   timer: {
     marginTop: 10,
@@ -364,10 +359,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
   },
+  refreshButton: {
+    alignItems: "center",
+  },
+  noBike: {
+    color: "#F2AA4CFF",
+    fontSize: 28,
+    marginBottom: 10,
+  },
   buttonText: {
     color: "#6597CA",
     fontSize: 18,
-    fontWeight: "bold",
+    marginBottom: 25,
   },
   costs: {
     fontWeight: "bold",
